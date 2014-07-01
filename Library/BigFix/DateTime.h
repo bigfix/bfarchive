@@ -22,7 +22,7 @@ public:
   uint8_t Hour() const { return m_hour; }
   uint8_t Minute() const { return m_minute; }
   uint8_t Second() const { return m_second; }
-  int8_t TimeZone() const { return m_timeZone; }
+  int32_t TimeZone() const { return m_timeZone; }
 
 private:
   uint32_t m_year;
