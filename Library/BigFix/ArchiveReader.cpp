@@ -161,7 +161,7 @@ const uint8_t* ArchiveReader::Date( const uint8_t* start, const uint8_t* end )
 
   if ( m_pos == m_length )
   {
-    m_mtime = ReadDate( m_buffer, m_length );
+    m_mtime = DateTime( DataRef( m_buffer, m_buffer + m_length ) );
     m_length = m_fileLengthLength;
     m_pos = 0;
     m_state = STATE_FILE_LENGTH;
@@ -178,7 +178,7 @@ const uint8_t* ArchiveReader::FileLength( const uint8_t* start,
 
   if ( m_pos == m_length )
   {
-    m_fileLength = ReadNumber( m_buffer, m_length );
+    m_fileLength = ReadLittleEndian( DataRef( m_buffer, m_buffer + m_length ) );
 
     if ( m_isDirectory )
     {

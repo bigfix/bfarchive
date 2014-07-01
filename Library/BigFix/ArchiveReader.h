@@ -2,6 +2,7 @@
 #define BigFix_ArchiveReader_h
 
 #include "BigFix/ArchiveStream.h"
+#include "BigFix/DateTime.h"
 #include "BigFix/Stream.h"
 #include <stdint.h>
 #include <time.h>
@@ -45,7 +46,7 @@ private:
   ArchiveEncoding m_nameEncoding;
   size_t m_fileLengthLength;
   bool m_isDirectory;
-  time_t m_mtime;
+  DateTime m_mtime;
   size_t m_pos;
   size_t m_length;
   uint64_t m_filePos;

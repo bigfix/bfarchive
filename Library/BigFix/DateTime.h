@@ -3,16 +3,38 @@
 
 #include <stdint.h>
 #include <time.h>
+#include <string>
 
 namespace BigFix
 {
 
+class DataRef;
+
 class DateTime
 {
+public:
+  DateTime();
+  explicit DateTime( DataRef );
+
+  uint32_t Year() const { return m_year; }
+  uint8_t Month() const { return m_month; }
+  uint8_t Day() const { return m_day; }
+  uint8_t Hour() const { return m_hour; }
+  uint8_t Minute() const { return m_minute; }
+  uint8_t Second() const { return m_second; }
+  int8_t TimeZone() const { return m_timeZone; }
+
+private:
+  uint32_t m_year;
+  uint8_t m_month;
+  uint8_t m_day;
+  uint8_t m_hour;
+  uint8_t m_minute;
+  uint8_t m_second;
+  int32_t m_timeZone;
 };
 
-time_t ReadDate( const uint8_t* buffer, size_t length );
-void WriteDate( time_t timestamp, uint8_t* buffer, size_t length );
+std::string MakeString( const DateTime& );
 
 }
 

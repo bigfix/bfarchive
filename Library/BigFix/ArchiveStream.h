@@ -2,10 +2,11 @@
 #define BigFix_ArchiveStream_h
 
 #include <stdint.h>
-#include <time.h>
 
 namespace BigFix
 {
+
+class DateTime;
 
 enum ArchiveEncoding
 {
@@ -20,11 +21,11 @@ public:
 
   virtual void Directory( const char* name,
                           ArchiveEncoding nameEncoding,
-                          time_t mtime ) = 0;
+                          const DateTime& mtime ) = 0;
 
   virtual void FileStart( const char* name,
                           ArchiveEncoding nameEncoding,
-                          time_t mtime,
+                          const DateTime& mtime,
                           uint64_t length ) = 0;
 
   virtual void FileWrite( const uint8_t* start, const uint8_t* end ) = 0;

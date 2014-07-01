@@ -7,8 +7,13 @@
 namespace BigFix
 {
 
-uint64_t ReadNumber( const uint8_t* buffer, size_t length );
-void WriteNumber( uint64_t, uint8_t* buffer, size_t length );
+class DataRef;
+
+uint64_t ReadLittleEndian( DataRef );
+void WriteLittleEndian( uint64_t, uint8_t* buffer, size_t length );
+
+template <class T>
+T ReadAsciiNumber( DataRef );
 
 }
 

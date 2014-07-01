@@ -36,11 +36,16 @@ public:
   size_t Length() const { return m_end - m_start; }
   bool IsEmpty() const { return m_start == m_end; }
 
+  uint8_t operator[]( size_t n ) const;
+  DataRef Slice( size_t start, size_t length );
+
 private:
   const uint8_t* m_start;
   const uint8_t* m_end;
 };
 
 }
+
+bool operator==( BigFix::DataRef, BigFix::DataRef );
 
 #endif

@@ -1,6 +1,7 @@
 add_library(bigfix
   BigFix/ArchiveReader.cpp
   BigFix/ArchiveStream.cpp
+  BigFix/DataRef.cpp
   BigFix/DateTime.cpp
   BigFix/Error.cpp
   BigFix/InflateStream.cpp

@@ -11,6 +11,7 @@ struct ArchiveEntry
   bool isDirectory;
   std::string name;
   ArchiveEncoding nameEncoding;
+  DateTime mtime;
   uint64_t length;
   std::string contents;
   bool ended;
@@ -25,18 +26,18 @@ public:
 
   virtual void Directory( const char* name,
                           ArchiveEncoding nameEncoding,
-                          time_t mtime )
+                          const DateTime& mtime )
   {
-    ArchiveEntry entry = { true, name, nameEncoding, 0, "", true };
+    ArchiveEntry entry = { true, name, nameEncoding, mtime, 0, "", true };
     m_entries.push_back( entry );
   }
 
   virtual void FileStart( const char* name,
                           ArchiveEncoding nameEncoding,
-                          time_t mtime,
+                          const DateTime& mtime,
                           uint64_t length )
   {
-    ArchiveEntry entry = { false, name, nameEncoding, length, "", false };
+    ArchiveEntry entry = { false, name, nameEncoding, mtime, length, "", false };
     m_entries.push_back( entry );
   }
 
