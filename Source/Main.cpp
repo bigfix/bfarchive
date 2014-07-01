@@ -11,14 +11,14 @@ class ArchiveListStream : public ArchiveStream
 public:
   virtual void Directory( const char* name,
                           ArchiveEncoding nameEncoding,
-                          time_t mtime )
+                          const DateTime& mtime )
   {
     std::cout << name << std::endl;
   }
 
   virtual void FileStart( const char* name,
                           ArchiveEncoding nameEncoding,
-                          time_t mtime,
+                          const DateTime& mtime,
                           uint64_t length )
   {
     std::cout << name << std::endl;
