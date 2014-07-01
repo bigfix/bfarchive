@@ -7,7 +7,7 @@ Building
     $ /path/to/bfarchive/configure
     $ make
 
-You run the unit tests with:
+You can run the unit tests with:
 
     $ make test
 
