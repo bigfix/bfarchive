@@ -3,12 +3,11 @@ Work still in progress.
 Building
 ===
 
-    $ mkdir build
     $ cd build
-    $ cmake path/to/bfarchive
+    $ /path/to/bfarchive/configure
     $ make
 
-You can then run the unit tests with:
+You run the unit tests with:
 
     $ make test
 
