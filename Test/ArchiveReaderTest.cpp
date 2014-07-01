@@ -73,7 +73,7 @@ TEST( ArchiveReaderTest, EmptyArchive )
   ASSERT_TRUE( entries.empty() );
 }
 
-TEST( ArchiveReaderTest, ArchiveVersion1 )
+TEST( ArchiveReaderTest, BasicArchive )
 {
   uint8_t data[] =
   {
