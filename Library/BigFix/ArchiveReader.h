@@ -14,7 +14,6 @@ class ArchiveReader : public Stream
 public:
   explicit ArchiveReader( ArchiveStream& output );
 
-  virtual void Start();
   virtual void Write( DataRef );
   virtual void End();
 

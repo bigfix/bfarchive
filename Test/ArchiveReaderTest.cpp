@@ -59,7 +59,6 @@ static std::vector<ArchiveEntry> ReadArchive( const uint8_t* start,
   TestArchiveStream archiveStream( entries );
   ArchiveReader reader( archiveStream );
 
-  reader.Start();
   reader.Write( DataRef( start, start + length ) );
   reader.End();
 

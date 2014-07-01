@@ -24,11 +24,6 @@ InflateStream::~InflateStream()
   inflateEnd( &m_zstream );
 }
 
-void InflateStream::Start()
-{
-  m_state = STATE_HEADER;
-}
-
 void InflateStream::Write( DataRef data )
 {
   const uint8_t* start = data.Start();

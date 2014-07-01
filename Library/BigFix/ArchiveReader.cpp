@@ -13,11 +13,6 @@ ArchiveReader::ArchiveReader( ArchiveStream& output )
 {
 }
 
-void ArchiveReader::Start()
-{
-  m_state = STATE_NAME_ENCODING;
-}
-
 void ArchiveReader::Write( DataRef data )
 {
   const uint8_t* start = data.Start();

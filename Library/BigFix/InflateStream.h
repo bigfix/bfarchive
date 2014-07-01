@@ -14,7 +14,6 @@ public:
   explicit InflateStream( Stream& output );
   virtual ~InflateStream();
 
-  virtual void Start();
   virtual void Write( DataRef );
   virtual void End();
 
