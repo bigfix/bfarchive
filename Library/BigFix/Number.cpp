@@ -54,4 +54,5 @@ T ReadAsciiNumber( DataRef data )
 template uint8_t ReadAsciiNumber<uint8_t>( DataRef );
 template int32_t ReadAsciiNumber<int32_t>( DataRef );
 template uint32_t ReadAsciiNumber<uint32_t>( DataRef );
+
 }

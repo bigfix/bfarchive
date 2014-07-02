@@ -26,7 +26,7 @@ static uint8_t ReadMonth( DataRef month )
 {
   for ( uint8_t i = 0; i < 12; i++ )
     if ( month == months[i] )
-      return i;
+      return i + 1;
 
   throw Error( "Invalid datetime: bad month" );
 }
@@ -68,8 +68,8 @@ static int32_t ReadTimeZone( DataRef timeZone )
 
 DateTime::DateTime()
   : m_year( 1970 )
-  , m_month( 0 )
-  , m_day( 0 )
+  , m_month( 1 )
+  , m_day( 1 )
   , m_hour( 0 )
   , m_minute( 0 )
   , m_second( 0 )
