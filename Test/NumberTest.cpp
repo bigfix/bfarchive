@@ -45,3 +45,10 @@ TEST( NumberTest, Write8ByteInteger )
   EXPECT_EQ( 7, number[6] );
   EXPECT_EQ( 8, number[7] );
 }
+
+TEST( NumberTest, ReadAsciiNumber )
+{
+  EXPECT_EQ( 42, ReadAsciiNumber<uint8_t>( DataRef( "42" ) ) );
+  EXPECT_EQ( 1970, ReadAsciiNumber<int32_t>( DataRef( "1970" ) ) );
+  EXPECT_THROW( ReadAsciiNumber<uint8_t>( DataRef( "hello" ) ), Error );
+}
