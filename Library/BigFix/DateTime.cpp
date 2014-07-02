@@ -2,6 +2,8 @@
 #include "BigFix/DataRef.h"
 #include "BigFix/Error.h"
 #include "BigFix/Number.h"
+#include <sstream>
+#include <stdlib.h>
 
 namespace BigFix
 {
@@ -42,11 +44,11 @@ static DataRef days[7] =
   DataRef( "Sat" )
 };
 
-static void VerifyDayOfWeek( DataRef day )
+static uint8_t ReadDayOfWeek( DataRef day )
 {
-  for ( size_t i = 0; i < 7; i++ )
+  for ( uint8_t i = 0; i < 7; i++ )
     if ( day == days[i] )
-      return;
+      return i + 1;
 
     throw Error( "Invalid datetime: bad day of week" );
 }
@@ -70,6 +72,7 @@ DateTime::DateTime()
   : m_year( 1970 )
   , m_month( 1 )
   , m_day( 1 )
+  , m_dayOfWeek( 4 )
   , m_hour( 0 )
   , m_minute( 0 )
   , m_second( 0 )
@@ -82,7 +85,7 @@ DateTime::DateTime( DataRef date )
   // Example: Sun, 11 Mar 1984 00:00:00 +0000
 
   Verify( date.Length() == 31 );
-  VerifyDayOfWeek( date.Slice( 0, 3 ) );
+  m_dayOfWeek = ReadDayOfWeek( date.Slice( 0, 3 ) );
   Verify( date.Slice( 3, 2 ) == DataRef( ", " ) );
   m_day = ReadAsciiNumber<uint8_t>( date.Slice( 5, 2 ) );
   Verify( date[7] == ' ' );
@@ -99,9 +102,48 @@ DateTime::DateTime( DataRef date )
   m_timeZone = ReadTimeZone( date.Slice( 26, 5 ) );
 }
 
-std::string MakeString()
+std::string MakeString( const DateTime& date )
 {
-  return "";
+  std::stringstream result;
+  result.fill( '0' );
+
+  result.write(
+    reinterpret_cast<const char*>( days[date.DayOfWeek() - 1].Start() ), 3 );
+
+  result << ", ";
+
+  result.width( 2 );
+  result << static_cast<int>( date.Day() );
+
+  result << " ";
+
+  result.write(
+    reinterpret_cast<const char*>( months[date.Month() - 1].Start() ), 3 );
+
+  result << " ";
+  result << static_cast<int>( date.Year() );
+  result << " ";
+
+  result.width( 2 );
+  result << static_cast<int>( date.Hour() );
+
+  result << ":";
+
+  result.width( 2 );
+  result << static_cast<int>( date.Minute() );
+
+  result << ":";
+
+  result.width( 2 );
+  result << static_cast<int>( date.Second() );
+
+  result << " ";
+  result << ( date.TimeZone() < 0 ? "-" : "+" );
+
+  result.width( 4 );
+  result << abs( date.TimeZone() );
+
+  return result.str();
 }
 
 }
