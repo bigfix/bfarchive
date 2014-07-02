@@ -37,7 +37,8 @@ public:
                           const DateTime& mtime,
                           uint64_t length )
   {
-    ArchiveEntry entry = { false, name, nameEncoding, mtime, length, "", false };
+    ArchiveEntry entry =
+      { false, name, nameEncoding, mtime, length, "", false };
     m_entries.push_back( entry );
   }
 
