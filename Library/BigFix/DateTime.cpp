@@ -79,38 +79,23 @@ DateTime::DateTime()
 
 DateTime::DateTime( DataRef date )
 {
-  // Sun, 11 Mar 1984 00:00:00 +0000
+  // Example: Sun, 11 Mar 1984 00:00:00 +0000
 
   Verify( date.Length() == 31 );
-
   VerifyDayOfWeek( date.Slice( 0, 3 ) );
-
   Verify( date.Slice( 3, 2 ) == DataRef( ", " ) );
-
   m_day = ReadAsciiNumber<uint8_t>( date.Slice( 5, 2 ) );
-
   Verify( date[7] == ' ' );
-
   m_month = ReadMonth( date.Slice( 8, 3 ) );
-
   Verify( date[11] == ' ' );
-
   m_year = ReadAsciiNumber<uint32_t>( date.Slice( 12, 4 ) );
-
   Verify( date[16] == ' ' );
-
   m_hour = ReadAsciiNumber<uint8_t>( date.Slice( 17, 2 ) );
-
   Verify( date[19] == ':' );
-
   m_minute = ReadAsciiNumber<uint8_t>( date.Slice( 20, 2 ) );
-
   Verify( date[22] == ':' );
-
   m_second = ReadAsciiNumber<uint8_t>( date.Slice( 23, 2 ) );
-
   Verify( date[25] == ' ' );
-
   m_timeZone = ReadTimeZone( date.Slice( 26, 5 ) );
 }
 
