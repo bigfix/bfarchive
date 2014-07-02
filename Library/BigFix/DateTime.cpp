@@ -102,46 +102,46 @@ DateTime::DateTime( DataRef date )
   m_timeZone = ReadTimeZone( date.Slice( 26, 5 ) );
 }
 
-std::string MakeString( const DateTime& date )
+std::string DateTime::ToString()
 {
   std::stringstream result;
   result.fill( '0' );
 
-  result.write(
-    reinterpret_cast<const char*>( days[date.DayOfWeek() - 1].Start() ), 3 );
+  result.write( reinterpret_cast<const char*>( days[m_dayOfWeek - 1].Start() ),
+                3 );
 
   result << ", ";
 
   result.width( 2 );
-  result << static_cast<int>( date.Day() );
+  result << static_cast<int>( m_day );
 
   result << " ";
 
-  result.write(
-    reinterpret_cast<const char*>( months[date.Month() - 1].Start() ), 3 );
+  result.write( reinterpret_cast<const char*>( months[m_month - 1].Start() ),
+                3 );
 
   result << " ";
-  result << static_cast<int>( date.Year() );
+  result << static_cast<int>( m_year );
   result << " ";
 
   result.width( 2 );
-  result << static_cast<int>( date.Hour() );
+  result << static_cast<int>( m_hour );
 
   result << ":";
 
   result.width( 2 );
-  result << static_cast<int>( date.Minute() );
+  result << static_cast<int>( m_minute );
 
   result << ":";
 
   result.width( 2 );
-  result << static_cast<int>( date.Second() );
+  result << static_cast<int>( m_second );
 
   result << " ";
-  result << ( date.TimeZone() < 0 ? "-" : "+" );
+  result << ( m_timeZone < 0 ? "-" : "+" );
 
   result.width( 4 );
-  result << abs( date.TimeZone() );
+  result << abs( m_timeZone );
 
   return result.str();
 }

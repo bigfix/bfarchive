@@ -35,5 +35,5 @@ TEST( DateTimeTest, ToString )
 {
   EXPECT_EQ(
     "Sun, 11 Mar 1984 08:23:42 -0800",
-    MakeString( DateTime( DataRef( "Sun, 11 Mar 1984 08:23:42 -0800" ) ) ) );
+    DateTime( DataRef( "Sun, 11 Mar 1984 08:23:42 -0800" ) ).ToString() );
 }
