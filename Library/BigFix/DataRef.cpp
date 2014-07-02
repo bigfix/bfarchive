@@ -1,5 +1,6 @@
 #include "DataRef.h"
 #include "BigFix/Error.h"
+#include <string.h>
 
 namespace BigFix
 {

@@ -2,6 +2,7 @@
 #define BigFix_Error_h
 
 #include <exception>
+#include <stddef.h>
 
 namespace BigFix
 {

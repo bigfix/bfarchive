@@ -153,7 +153,7 @@ TEST( ArchiveReaderTest, HugeFile )
 
 TEST( ArchiveReaderTest, UTF8File )
 {
-  const char konnichiwa[] =
+  const uint8_t konnichiwa[] =
   {
     0xe3, 0x81, 0x93, 0xe3, 0x82, 0x93, 0xe3, 0x81, 0xab, 0xe3, 0x81, 0xa1,
     0xe3, 0x81, 0xaf, 0x00
@@ -174,7 +174,7 @@ TEST( ArchiveReaderTest, UTF8File )
   ASSERT_EQ( 1, entries.size() );
 
   EXPECT_FALSE( entries[0].isDirectory );
-  EXPECT_EQ( konnichiwa, entries[0].name );
+  EXPECT_EQ( reinterpret_cast<const char*>( konnichiwa ), entries[0].name );
   EXPECT_EQ( ARCHIVE_ENCODING_UTF8, entries[0].nameEncoding );
   EXPECT_EQ( "Tue, 01 Jul 2014 08:07:02 +0000", entries[0].mtime.ToString() );
   EXPECT_EQ( 5, entries[0].length );

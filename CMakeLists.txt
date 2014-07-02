@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 
-set(BIGFIX_COMPILE_OPTIONS
-  -fcolor-diagnostics
-  -Wall
-  -Werror
-  -g
-)
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+  set(BIGFIX_COMPILE_OPTIONS -Wall -Werror -g -fcolor-diagnostics)
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  set(BIGFIX_COMPILE_OPTIONS -Wall -Werror -g)
+endif()
 
 add_subdirectory(External/zlib)
 add_subdirectory(External/gtest)
