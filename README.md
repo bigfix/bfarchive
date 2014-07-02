@@ -3,12 +3,11 @@ Work still in progress.
 Building
 ===
 
+The build requires that you have [CMake](http://cmake.org/) installed.
+
     $ cd build
     $ /path/to/bfarchive/configure
     $ make
-
-You can run the unit tests with:
-
     $ make test
 
 Support
