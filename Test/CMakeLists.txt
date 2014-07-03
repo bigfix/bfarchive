@@ -16,5 +16,4 @@ target_link_libraries(runtests bigfix gtest)
 add_custom_target(test
   DEPENDS runtests
   COMMAND runtests --gtest_color=yes
-  COMMAND ${CMAKE_COMMAND} -E echo 'ALL TESTS PASSED'
 )
