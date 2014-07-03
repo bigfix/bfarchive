@@ -6,7 +6,7 @@ Building
 The build requires that you have [CMake](http://cmake.org/) installed.
 
     $ cd build
-    $ /path/to/bfarchive/configure
+    $ cmake /path/to/bfarchive
     $ make
     $ make test
 
