@@ -17,6 +17,8 @@ public:
   virtual void End();
 
 private:
+  void WriteHeader();
+
   Stream& m_output;
   bool m_sentHeader;
   z_stream m_zstream;

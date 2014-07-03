@@ -23,10 +23,7 @@ DeflateStream::~DeflateStream()
 void DeflateStream::Write( DataRef data )
 {
   if ( !m_sentHeader )
-  {
-    m_output.Write( DataRef( "##SC001\0\0\0\0\0" ) );
-    m_sentHeader = true;
-  }
+    WriteHeader();
 
   if ( data.IsEmpty() )
     return;
@@ -51,6 +48,9 @@ void DeflateStream::Write( DataRef data )
 
 void DeflateStream::End()
 {
+  if ( !m_sentHeader )
+    WriteHeader();
+
   uint8_t buffer[4096];
 
   m_zstream.next_in = Z_NULL;
@@ -69,6 +69,12 @@ void DeflateStream::End()
   while ( m_zstream.avail_out == 0 );
 
   m_output.End();
+}
+
+void DeflateStream::WriteHeader()
+{
+  m_output.Write( DataRef( "##SC001\0\0\0\0\0" ) );
+  m_sentHeader = true;  
 }
 
 }
