@@ -102,7 +102,7 @@ DateTime::DateTime( DataRef date )
   m_timeZone = ReadTimeZone( date.Slice( 26, 5 ) );
 }
 
-std::string DateTime::ToString()
+std::string DateTime::ToString() const
 {
   std::stringstream result;
   result.fill( '0' );

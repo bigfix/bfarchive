@@ -113,6 +113,7 @@ const uint8_t* ArchiveReader::NameLength( const uint8_t* start,
   }
   else
   {
+    m_output.End();
     m_state = STATE_DONE;
   }
 
@@ -213,7 +214,7 @@ const uint8_t* ArchiveReader::File( const uint8_t* start, const uint8_t* end )
   {
     m_output.FileWrite(
       DataRef( start, start + static_cast<size_t>( amount ) ) );
-    
+
     start += amount;
     m_filePos += amount;
   }

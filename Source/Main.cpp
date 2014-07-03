@@ -27,6 +27,8 @@ public:
   virtual void FileWrite( DataRef ) {}
 
   virtual void FileEnd() {}
+
+  virtual void End() {}
 };
 
 int main()

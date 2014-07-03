@@ -25,7 +25,7 @@ public:
   uint8_t Second() const { return m_second; }
   int32_t TimeZone() const { return m_timeZone; }
 
-  std::string ToString();
+  std::string ToString() const;
 
 private:
   uint32_t m_year;

@@ -27,6 +27,8 @@ public:
   virtual void FileWrite( DataRef ) = 0;
 
   virtual void FileEnd() = 0;
+
+  virtual void End() = 0;
 };
 
 }

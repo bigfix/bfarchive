@@ -20,7 +20,7 @@ struct ArchiveEntry
 class TestArchiveStream : public ArchiveStream
 {
 public:
-  TestArchiveStream( std::vector<ArchiveEntry>& entries ) : m_entries( entries )
+  TestArchiveStream() : ended( false )
   {
   }
 
@@ -29,7 +29,7 @@ public:
                           const DateTime& mtime )
   {
     ArchiveEntry entry = { true, name, nameEncoding, mtime, 0, "", true };
-    m_entries.push_back( entry );
+    entries.push_back( entry );
   }
 
   virtual void FileStart( const char* name,
@@ -39,39 +39,39 @@ public:
   {
     ArchiveEntry entry =
       { false, name, nameEncoding, mtime, length, "", false };
-    m_entries.push_back( entry );
+    entries.push_back( entry );
   }
 
   virtual void FileWrite( DataRef data )
   {
-    m_entries.back().contents.append(
+    entries.back().contents.append(
       reinterpret_cast<const char*>( data.Start() ), data.Length() );
   }
 
-  virtual void FileEnd() { m_entries.back().ended = true; }
+  virtual void FileEnd() { entries.back().ended = true; }
 
-private:
-  std::vector<ArchiveEntry>& m_entries;
+  virtual void End() { ended = true; }
+
+  std::vector<ArchiveEntry> entries;
+  bool ended;
 };
 
-static std::vector<ArchiveEntry> ReadArchive( const uint8_t* start,
-                                              size_t length )
+static TestArchiveStream ReadArchive( const uint8_t* start, size_t length )
 {
-  std::vector<ArchiveEntry> entries;
-  TestArchiveStream archiveStream( entries );
+  TestArchiveStream archiveStream;
   ArchiveReader reader( archiveStream );
 
   reader.Write( DataRef( start, start + length ) );
   reader.End();
 
-  return entries;
+  return archiveStream;
 }
 
 TEST( ArchiveReaderTest, EmptyArchive )
 {
   uint8_t data[] = { 0x5f, 0x00 };
-  std::vector<ArchiveEntry> entries = ReadArchive( data, sizeof( data ) );
-  ASSERT_TRUE( entries.empty() );
+  TestArchiveStream output = ReadArchive( data, sizeof( data ) );
+  ASSERT_TRUE( output.entries.empty() );
 }
 
 TEST( ArchiveReaderTest, BasicArchive )
@@ -94,8 +94,10 @@ TEST( ArchiveReaderTest, BasicArchive )
     0x20, 0x2b, 0x30, 0x30, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x5f, 0x00
   };
 
-  std::vector<ArchiveEntry> entries = ReadArchive( data, sizeof( data ) );
+  TestArchiveStream output = ReadArchive( data, sizeof( data ) );
+  EXPECT_TRUE( output.ended );
 
+  const std::vector<ArchiveEntry>& entries = output.entries;
   ASSERT_EQ( 3, entries.size() );
 
   EXPECT_TRUE( entries[0].isDirectory );
@@ -140,8 +142,9 @@ TEST( ArchiveReaderTest, HugeFile )
     0x20, 0x2b, 0x30, 0x30, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x5f, 0x00
   };
 
-  std::vector<ArchiveEntry> entries = ReadArchive( data, sizeof( data ) );
+  TestArchiveStream output = ReadArchive( data, sizeof( data ) );
 
+  const std::vector<ArchiveEntry>& entries = output.entries;
   ASSERT_EQ( 1, entries.size() );
 
   EXPECT_FALSE( entries[0].isDirectory );
@@ -169,8 +172,10 @@ TEST( ArchiveReaderTest, UTF8File )
     0x5f, 0x00
   };
 
-  std::vector<ArchiveEntry> entries = ReadArchive( data, sizeof( data ) );
+  TestArchiveStream output = ReadArchive( data, sizeof( data ) );
+  EXPECT_TRUE( output.ended );
 
+  const std::vector<ArchiveEntry>& entries = output.entries;
   ASSERT_EQ( 1, entries.size() );
 
   EXPECT_FALSE( entries[0].isDirectory );
