@@ -33,7 +33,7 @@ TEST( InflateStreamTest, LongRaw )
   EXPECT_TRUE( stringStream.ended );
 }
 
-TEST( InflateStreamTest, Compressed )
+TEST( InflateStreamTest, DecompressHelloWorld )
 {
   StringStream stringStream;
   InflateStream inflateStream( stringStream );
@@ -49,5 +49,23 @@ TEST( InflateStreamTest, Compressed )
   inflateStream.End();
 
   EXPECT_EQ( "Hello, world!", stringStream.output );
+  EXPECT_TRUE( stringStream.ended );
+}
+
+TEST( InflateStreamTest, DecompressEmpty )
+{
+  StringStream stringStream;
+  InflateStream inflateStream( stringStream );
+
+  uint8_t data[] =
+  {
+    0x23, 0x23, 0x53, 0x43, 0x30, 0x30, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x78, 0x9c, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01
+  };
+
+  WriteOneByOne( inflateStream, DataRef( data, data + sizeof( data ) ) );
+  inflateStream.End();
+
+  EXPECT_EQ( "", stringStream.output );
   EXPECT_TRUE( stringStream.ended );
 }
