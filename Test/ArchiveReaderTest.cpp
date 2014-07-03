@@ -61,7 +61,8 @@ static TestArchiveStream ReadArchive( const uint8_t* start, size_t length )
   TestArchiveStream archiveStream;
   ArchiveReader reader( archiveStream );
 
-  reader.Write( DataRef( start, start + length ) );
+  for ( const uint8_t* it = start; it != start + length; it ++ )
+    reader.Write( DataRef( it, it + 1 ) );
   reader.End();
 
   return archiveStream;
