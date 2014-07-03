@@ -42,10 +42,8 @@ void InflateStream::Write( DataRef data )
       break;
 
     case STATE_COMPRESSED:
-      m_zstream.next_in = const_cast<uint8_t*>( start );
-      m_zstream.avail_in = end - start;
-      Pump( Z_NO_FLUSH );
-      return;
+      start = Compressed( start, end );
+      break;
 
     case STATE_RAW:
       m_output.Write( DataRef( start, end ) );
@@ -67,9 +65,8 @@ void InflateStream::End()
     throw Error( "Incomplete compressed data" );
 
   case STATE_COMPRESSED:
-    m_zstream.next_in = Z_NULL;
-    m_zstream.avail_in = 0;
-    Pump( Z_FINISH );
+    if ( m_zstatus != Z_STREAM_END )
+      throw Error( "Failed to decompress data" );
     break;
 
   case STATE_RAW:
@@ -114,22 +111,28 @@ const uint8_t* InflateStream::Checksum( const uint8_t* start,
   return start;
 }
 
-void InflateStream::Pump( int zflags )
+const uint8_t* InflateStream::Compressed( const uint8_t* start,
+                                          const uint8_t* end )
 {
   uint8_t buffer[4096];
 
-  while ( m_zstream.avail_in != 0 && m_zstatus != Z_STREAM_END )
+  m_zstream.next_in = const_cast<uint8_t*>( start );
+  m_zstream.avail_in = end - start;
+
+  do
   {
     m_zstream.next_out = buffer;
     m_zstream.avail_out = sizeof( buffer );
 
-    m_zstatus = inflate( &m_zstream, zflags );
+    m_zstatus = inflate( &m_zstream, Z_NO_FLUSH );
     if ( m_zstatus != Z_OK && m_zstatus != Z_STREAM_END )
       throw Error( "Failed to decompress data" );
 
-    if ( buffer != m_zstream.next_out )
-      m_output.Write( DataRef( buffer, m_zstream.next_out ) );
+    m_output.Write( DataRef( buffer, m_zstream.next_out ) );
   }
+  while ( m_zstream.avail_out == 0 );
+
+  return end;
 }
 
 }

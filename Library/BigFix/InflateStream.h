@@ -20,8 +20,7 @@ public:
 private:
   const uint8_t* Header( const uint8_t* start, const uint8_t* end );
   const uint8_t* Checksum( const uint8_t* start, const uint8_t* end );
- 
-  void Pump( int zflags );
+  const uint8_t* Compressed( const uint8_t* start, const uint8_t* end );
 
   enum State { STATE_HEADER, STATE_CHECKSUM, STATE_COMPRESSED, STATE_RAW };
 

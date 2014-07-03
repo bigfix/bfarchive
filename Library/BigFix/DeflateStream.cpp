@@ -7,7 +7,7 @@ namespace BigFix
 {
 
 DeflateStream::DeflateStream( Stream& output )
-  : m_output( output ), m_sentHeader( false ), m_zstatus( Z_OK )
+  : m_output( output ), m_sentHeader( false )
 {
   memset( &m_zstream, 0, sizeof( m_zstream ) );
 
@@ -28,34 +28,47 @@ void DeflateStream::Write( DataRef data )
     m_sentHeader = true;
   }
 
-  m_zstream.next_in = const_cast<uint8_t*>( data.Start() );
-  m_zstream.avail_in = data.Length();
-  Pump( Z_NO_FLUSH );
-}
+  if ( data.IsEmpty() )
+    return;
 
-void DeflateStream::End()
-{
-  m_zstream.next_in = Z_NULL;
-  m_zstream.avail_in = 0;
-  Pump( Z_FINISH );
-}
-
-void DeflateStream::Pump( int zflags )
-{
   uint8_t buffer[4096];
 
-  while ( m_zstream.avail_in != 0 )
+  m_zstream.next_in = const_cast<uint8_t*>( data.Start() );
+  m_zstream.avail_in = data.Length();
+
+  do
   {
     m_zstream.next_out = buffer;
     m_zstream.avail_out = sizeof( buffer );
 
-    m_zstatus = deflate( &m_zstream, zflags );
-    if ( m_zstatus != Z_OK )
-      throw Error( "Failed to decompress data" );
+    if ( deflate( &m_zstream, Z_NO_FLUSH ) == Z_STREAM_ERROR )
+      throw Error( "Failed to compress data" );
 
-    if ( buffer != m_zstream.next_out )
-      m_output.Write( DataRef( buffer, m_zstream.next_out ) );
+    m_output.Write( DataRef( buffer, m_zstream.next_out ) );
   }
+  while ( m_zstream.avail_out == 0 );
+}
+
+void DeflateStream::End()
+{
+  uint8_t buffer[4096];
+
+  m_zstream.next_in = Z_NULL;
+  m_zstream.avail_in = 0;
+
+  do
+  {
+    m_zstream.next_out = buffer;
+    m_zstream.avail_out = sizeof( buffer );
+
+    if ( deflate( &m_zstream, Z_FINISH ) == Z_STREAM_ERROR )
+      throw Error( "Failed to compress data" );
+
+    m_output.Write( DataRef( buffer, m_zstream.next_out ) );
+  }
+  while ( m_zstream.avail_out == 0 );
+
+  m_output.End();
 }
 
 }

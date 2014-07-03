@@ -17,12 +17,9 @@ public:
   virtual void End();
 
 private:
-  void Pump( int zflags );
-
   Stream& m_output;
   bool m_sentHeader;
   z_stream m_zstream;
-  int m_zstatus;
 };
 
 }
