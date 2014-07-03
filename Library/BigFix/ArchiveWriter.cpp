@@ -4,6 +4,7 @@
 #include "BigFix/Error.h"
 #include "BigFix/Number.h"
 #include "BigFix/Stream.h"
+#include <string.h>
 
 namespace BigFix
 {
