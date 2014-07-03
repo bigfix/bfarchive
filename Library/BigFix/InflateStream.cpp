@@ -125,8 +125,11 @@ const uint8_t* InflateStream::Compressed( const uint8_t* start,
     m_zstream.avail_out = sizeof( buffer );
 
     m_zstatus = inflate( &m_zstream, Z_NO_FLUSH );
-    if ( m_zstatus != Z_OK && m_zstatus != Z_STREAM_END )
+    if ( m_zstatus != Z_OK && m_zstatus != Z_STREAM_END &&
+         m_zstatus != Z_BUF_ERROR )
+    {
       throw Error( "Failed to decompress data" );
+    }
 
     m_output.Write( DataRef( buffer, m_zstream.next_out ) );
   }
