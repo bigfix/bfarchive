@@ -2,6 +2,7 @@
 #define TestUtility_h
 
 #include "BigFix/Stream.h"
+#include <stdint.h>
 #include <string>
 #include <vector>
 
