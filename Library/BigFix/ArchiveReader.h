@@ -43,7 +43,7 @@ private:
 
   ArchiveStream& m_output;
   State m_state;
-  ArchiveEncoding m_nameEncoding;
+  Encoding m_nameEncoding;
   size_t m_fileLengthLength;
   bool m_isDirectory;
   DateTime m_mtime;

@@ -10,7 +10,7 @@ struct ArchiveEntry
 {
   bool isDirectory;
   std::string name;
-  ArchiveEncoding nameEncoding;
+  Encoding nameEncoding;
   DateTime mtime;
   uint64_t length;
   std::string contents;
@@ -25,7 +25,7 @@ public:
   }
 
   virtual void Directory( const char* name,
-                          ArchiveEncoding nameEncoding,
+                          Encoding nameEncoding,
                           const DateTime& mtime )
   {
     ArchiveEntry entry = { true, name, nameEncoding, mtime, 0, "", true };
@@ -33,7 +33,7 @@ public:
   }
 
   virtual void FileStart( const char* name,
-                          ArchiveEncoding nameEncoding,
+                          Encoding nameEncoding,
                           const DateTime& mtime,
                           uint64_t length )
   {
@@ -100,12 +100,12 @@ TEST( ArchiveReaderTest, BasicArchive )
 
   EXPECT_TRUE( entries[0].isDirectory );
   EXPECT_EQ( "hello/", entries[0].name );
-  EXPECT_EQ( ARCHIVE_ENCODING_LOCAL, entries[0].nameEncoding );
+  EXPECT_EQ( ENCODING_LOCAL, entries[0].nameEncoding );
   EXPECT_EQ( "Tue, 01 Jul 2014 07:23:00 +0000", entries[0].mtime.ToString() );
 
   EXPECT_FALSE( entries[1].isDirectory );
   EXPECT_EQ( "hello/world.txt", entries[1].name );
-  EXPECT_EQ( ARCHIVE_ENCODING_LOCAL, entries[1].nameEncoding );
+  EXPECT_EQ( ENCODING_LOCAL, entries[1].nameEncoding );
   EXPECT_EQ( "Tue, 01 Jul 2014 07:23:00 +0000", entries[1].mtime.ToString() );
   EXPECT_EQ( "Hello, world!", entries[1].contents );
   EXPECT_EQ( 13, entries[1].length );
@@ -113,7 +113,7 @@ TEST( ArchiveReaderTest, BasicArchive )
 
   EXPECT_FALSE( entries[2].isDirectory );
   EXPECT_EQ( "hello/empty.txt", entries[2].name );
-  EXPECT_EQ( ARCHIVE_ENCODING_LOCAL, entries[2].nameEncoding );
+  EXPECT_EQ( ENCODING_LOCAL, entries[2].nameEncoding );
   EXPECT_EQ( "Tue, 01 Jul 2014 07:23:00 +0000", entries[2].mtime.ToString() );
   EXPECT_EQ( "", entries[2].contents );
   EXPECT_EQ( 0, entries[2].length );
@@ -146,7 +146,7 @@ TEST( ArchiveReaderTest, HugeFile )
 
   EXPECT_FALSE( entries[0].isDirectory );
   EXPECT_EQ( "huge_file", entries[0].name );
-  EXPECT_EQ( ARCHIVE_ENCODING_LOCAL, entries[0].nameEncoding );
+  EXPECT_EQ( ENCODING_LOCAL, entries[0].nameEncoding );
   EXPECT_EQ( "Tue, 01 Jul 2014 07:54:26 +0000", entries[0].mtime.ToString() );
   EXPECT_EQ( 4294967296, entries[0].length );
 }
@@ -175,7 +175,7 @@ TEST( ArchiveReaderTest, UTF8File )
 
   EXPECT_FALSE( entries[0].isDirectory );
   EXPECT_EQ( reinterpret_cast<const char*>( konnichiwa ), entries[0].name );
-  EXPECT_EQ( ARCHIVE_ENCODING_UTF8, entries[0].nameEncoding );
+  EXPECT_EQ( ENCODING_UTF8, entries[0].nameEncoding );
   EXPECT_EQ( "Tue, 01 Jul 2014 08:07:02 +0000", entries[0].mtime.ToString() );
   EXPECT_EQ( 5, entries[0].length );
   EXPECT_EQ( "hello", entries[0].contents );

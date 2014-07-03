@@ -1,6 +1,7 @@
 #ifndef BigFix_ArchiveStream_h
 #define BigFix_ArchiveStream_h
 
+#include "BigFix/Encoding.h"
 #include <stdint.h>
 
 namespace BigFix
@@ -8,23 +9,17 @@ namespace BigFix
 
 class DateTime;
 
-enum ArchiveEncoding
-{
-  ARCHIVE_ENCODING_LOCAL,
-  ARCHIVE_ENCODING_UTF8
-};
-
 class ArchiveStream
 {
 public:
   virtual ~ArchiveStream();
 
   virtual void Directory( const char* name,
-                          ArchiveEncoding nameEncoding,
+                          Encoding nameEncoding,
                           const DateTime& mtime ) = 0;
 
   virtual void FileStart( const char* name,
-                          ArchiveEncoding nameEncoding,
+                          Encoding nameEncoding,
                           const DateTime& mtime,
                           uint64_t length ) = 0;
 

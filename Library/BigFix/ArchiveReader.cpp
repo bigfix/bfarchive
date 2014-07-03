@@ -69,12 +69,12 @@ const uint8_t* ArchiveReader::NameEncoding( const uint8_t* start,
 {
   if ( *start == '2' )
   {
-    m_nameEncoding = ARCHIVE_ENCODING_UTF8;
+    m_nameEncoding = ENCODING_UTF8;
     start++;
   }
   else
   {
-    m_nameEncoding = ARCHIVE_ENCODING_LOCAL;
+    m_nameEncoding = ENCODING_LOCAL;
   }
 
   m_state = STATE_FILE_LENGTH_LENGTH;
