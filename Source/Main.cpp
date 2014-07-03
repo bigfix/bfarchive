@@ -24,7 +24,7 @@ public:
     std::cout << name << std::endl;
   }
 
-  virtual void FileWrite( const uint8_t* start, const uint8_t* end ) {}
+  virtual void FileWrite( DataRef ) {}
 
   virtual void FileEnd() {}
 };

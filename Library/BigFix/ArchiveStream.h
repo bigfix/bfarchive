@@ -8,6 +8,7 @@ namespace BigFix
 {
 
 class DateTime;
+class DataRef;
 
 class ArchiveStream
 {
@@ -23,7 +24,7 @@ public:
                           const DateTime& mtime,
                           uint64_t length ) = 0;
 
-  virtual void FileWrite( const uint8_t* start, const uint8_t* end ) = 0;
+  virtual void FileWrite( DataRef ) = 0;
 
   virtual void FileEnd() = 0;
 };

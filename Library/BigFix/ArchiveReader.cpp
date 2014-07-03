@@ -211,7 +211,9 @@ const uint8_t* ArchiveReader::File( const uint8_t* start, const uint8_t* end )
 
   if ( amount )
   {
-    m_output.FileWrite( start, start + static_cast<size_t>( amount ) );
+    m_output.FileWrite(
+      DataRef( start, start + static_cast<size_t>( amount ) ) );
+    
     start += amount;
     m_filePos += amount;
   }

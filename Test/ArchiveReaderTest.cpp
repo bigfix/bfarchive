@@ -42,10 +42,10 @@ public:
     m_entries.push_back( entry );
   }
 
-  virtual void FileWrite( const uint8_t* start, const uint8_t* end )
+  virtual void FileWrite( DataRef data )
   {
-    m_entries.back().contents.append( reinterpret_cast<const char*>( start ),
-                                      end - start );
+    m_entries.back().contents.append(
+      reinterpret_cast<const char*>( data.Start() ), data.Length() );
   }
 
   virtual void FileEnd() { m_entries.back().ended = true; }
