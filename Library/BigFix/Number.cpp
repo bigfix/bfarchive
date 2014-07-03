@@ -12,7 +12,7 @@ uint64_t ReadLittleEndian( DataRef data )
   for ( size_t i = data.Length(); i != 0; i-- )
   {
     number *= 256;
-    number += data.Start()[i - 1];
+    number += data[i - 1];
   }
 
   return number;
@@ -39,7 +39,7 @@ T ReadAsciiNumber( DataRef data )
 
   for ( size_t i = 0; i < data.Length(); i++ )
   {
-    uint8_t c = data.Start()[i];
+    uint8_t c = data[i];
 
     if ( !IsAsciiDigit( c ) )
       throw Error( "Invalid ascii number" );
