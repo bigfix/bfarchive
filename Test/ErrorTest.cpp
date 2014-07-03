@@ -11,7 +11,7 @@ TEST( ErrorTest, ErrorIsAStdException )
   }
   catch ( const std::exception& e )
   {
-    EXPECT_EQ( "Oh noes!", e.what() );
+    EXPECT_EQ( std::string( "Oh noes!" ), e.what() );
   }
   catch ( ... )
   {
