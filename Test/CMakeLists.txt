@@ -1,5 +1,6 @@
 add_executable(runtests EXCLUDE_FROM_ALL
   ArchiveReaderTest.cpp
+  ArchiveWriterTest.cpp
   DateTimeTest.cpp
   DataRefTest.cpp
   ErrorTest.cpp

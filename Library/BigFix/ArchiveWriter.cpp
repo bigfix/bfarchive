@@ -42,6 +42,7 @@ void ArchiveWriter::FileEnd()
 void ArchiveWriter::End()
 {
   m_output.Write( DataRef( "_\0" ) );
+  m_output.End();
 }
 
 void ArchiveWriter::WriteHeader( const char* name,
