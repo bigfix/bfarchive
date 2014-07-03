@@ -135,6 +135,7 @@ TEST( ArchiveReaderTest, HugeFile )
   };
 
   TestArchiveStream output = ReadArchive( data, sizeof( data ) );
+  EXPECT_FALSE( output.ended );
 
   const std::vector<ArchiveEntry>& entries = output.entries;
   ASSERT_EQ( 1, entries.size() );
