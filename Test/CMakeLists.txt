@@ -3,9 +3,11 @@ add_executable(runtests EXCLUDE_FROM_ALL
   ArchiveWriterTest.cpp
   DateTimeTest.cpp
   DataRefTest.cpp
+  DeflateStreamTest.cpp
   ErrorTest.cpp
   InflateStreamTest.cpp
   NumberTest.cpp
+  TestUtility.cpp
 )
 
 target_compile_options(runtests PRIVATE ${BIGFIX_COMPILE_OPTIONS})

@@ -1,23 +1,8 @@
 #include "BigFix/ArchiveWriter.cpp"
+#include "TestUtility.h"
 #include <gtest/gtest.h>
 
 using namespace BigFix;
-
-class VectorStream : public Stream
-{
-public:
-  VectorStream() : ended( false ) {}
-
-  virtual void Write( DataRef data )
-  {
-    output.insert( output.end(), data.Start(), data.End() );
-  }
-
-  virtual void End() { ended = true; }
-
-  std::vector<uint8_t> output;
-  bool ended;
-};
 
 TEST( ArchiveWriterTest, EmptyArchive )
 {
