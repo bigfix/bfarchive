@@ -4,6 +4,7 @@ add_library(bigfix
   BigFix/ArchiveWriter.cpp
   BigFix/DataRef.cpp
   BigFix/DateTime.cpp
+  BigFix/DeflateStream.cpp
   BigFix/Error.cpp
   BigFix/InflateStream.cpp
   BigFix/Number.cpp

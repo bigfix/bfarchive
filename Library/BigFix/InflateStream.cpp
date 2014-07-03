@@ -42,12 +42,14 @@ void InflateStream::Write( DataRef data )
       break;
 
     case STATE_COMPRESSED:
-      start = Compressed( start, end );
-      break;
+      m_zstream.next_in = const_cast<uint8_t*>( start );
+      m_zstream.avail_in = end - start;
+      Pump( Z_NO_FLUSH );
+      return;
 
     case STATE_RAW:
-      start = Raw( start, end );
-      break;
+      m_output.Write( DataRef( start, end ) );
+      return;
     }
   }
 }
@@ -84,7 +86,7 @@ const uint8_t* InflateStream::Header( const uint8_t* start, const uint8_t* end )
 
   if ( m_pos == sizeof( m_header ) )
   {
-    if ( memcmp( m_header, "##SC001", sizeof( m_header ) ) == 0 )
+    if ( memcmp( m_header, "##SC001\0", sizeof( m_header ) ) == 0 )
     {
       m_state = STATE_CHECKSUM;
       m_pos = 0;
@@ -110,21 +112,6 @@ const uint8_t* InflateStream::Checksum( const uint8_t* start,
     m_state = STATE_COMPRESSED;
 
   return start;
-}
-
-const uint8_t* InflateStream::Compressed( const uint8_t* start,
-                                          const uint8_t* end )
-{
-  m_zstream.next_in = const_cast<uint8_t*>( start );
-  m_zstream.avail_in = end - start;
-  Pump( Z_NO_FLUSH );
-  return end;
-}
-
-const uint8_t* InflateStream::Raw( const uint8_t* start, const uint8_t* end )
-{
-  m_output.Write( DataRef( start, end ) );
-  return end;
 }
 
 void InflateStream::Pump( int zflags )

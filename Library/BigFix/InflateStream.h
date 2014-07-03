@@ -20,8 +20,6 @@ public:
 private:
   const uint8_t* Header( const uint8_t* start, const uint8_t* end );
   const uint8_t* Checksum( const uint8_t* start, const uint8_t* end );
-  const uint8_t* Compressed( const uint8_t* start, const uint8_t* end );
-  const uint8_t* Raw( const uint8_t* start, const uint8_t* end );
  
   void Pump( int zflags );
 
