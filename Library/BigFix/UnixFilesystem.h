@@ -12,6 +12,7 @@ public:
   explicit UnixFile( int fd );
   virtual ~UnixFile();
 
+  virtual size_t Read( uint8_t* buffer, size_t length );
   virtual void Write( DataRef );
 
 private:

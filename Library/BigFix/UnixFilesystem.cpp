@@ -2,6 +2,7 @@
 #include "BigFix/DataRef.h"
 #include "BigFix/Error.h"
 #include <fcntl.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 namespace BigFix
@@ -14,6 +15,16 @@ UnixFile::UnixFile( int fd ) : m_fd( fd )
 UnixFile::~UnixFile()
 {
   close( m_fd );
+}
+
+size_t UnixFile::Read( uint8_t* buffer, size_t length )
+{
+  ssize_t nread = read( m_fd, buffer, length );
+
+  if ( nread < 0 )
+    throw Error( "Failed to read file" );
+
+  return nread;
 }
 
 void UnixFile::Write( DataRef data )
@@ -34,6 +45,9 @@ void UnixFile::Write( DataRef data )
 
 static std::auto_ptr<File> MakeFile( int fd )
 {
+  if ( fd < 0 )
+    throw Error( "Failed to open or create file" );
+
   std::auto_ptr<File> file;
 
   try
@@ -51,11 +65,18 @@ static std::auto_ptr<File> MakeFile( int fd )
 
 std::auto_ptr<File> OpenNewFile( const char* name, Encoding nameEncoding )
 {
-  int fd = open( name, O_WRONLY | O_CREAT | O_EXCL, S_IRWXU );
-  if ( fd < 0 )
-    throw Error( "Failed to create file" );
+  return MakeFile( open( name, O_WRONLY | O_CREAT | O_EXCL, S_IRWXU ) );
+}
 
-  return MakeFile( fd );
+std::auto_ptr<File> OpenExistingFile( const char* name, Encoding nameEncoding )
+{
+  return MakeFile( open( name, O_RDONLY ) );
+}
+
+void MakeDir( const char* name, Encoding nameEncoding )
+{
+  if ( mkdir( name, S_IRWXU ) )
+    throw Error( "Failed to create directory" );
 }
 
 }

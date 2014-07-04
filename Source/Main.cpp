@@ -1,59 +1,59 @@
+#include "ArchiveExtractor.h"
 #include "BigFix/ArchiveReader.h"
-#include "BigFix/ArchiveStream.h"
 #include "BigFix/DataRef.h"
+#include "BigFix/Filesystem.h"
 #include "BigFix/InflateStream.h"
 #include <iostream>
 
 using namespace BigFix;
 
-class ArchiveListStream : public ArchiveStream
+static void PrintUsage()
 {
-public:
-  virtual void Directory( const char* name,
-                          Encoding nameEncoding,
-                          const DateTime& mtime )
+  std::cout << "Usage: bfarchive -x <source-archive> <output-directory>\n"
+               "\n"
+               "Where:\n"
+               "  -x, --extract Extract an archive\n"
+               "  -h, --help    Print this help\n"
+               "  -v, --version Print the version and exit\n";
+}
+
+int main( int argc, const char* argv[] )
+{
+  if ( argc != 4 )
   {
-    std::cout << name << std::endl;
+    PrintUsage();
+    return 1;
   }
 
-  virtual void FileStart( const char* name,
-                          Encoding nameEncoding,
-                          const DateTime& mtime,
-                          uint64_t length )
+  try
   {
-    std::cout << name << std::endl;
-  }
+    MakeDir( argv[3], ENCODING_UTF8 );
 
-  virtual void FileWrite( DataRef ) {}
+    std::auto_ptr<File> archive = OpenExistingFile( argv[2], ENCODING_UTF8 );
 
-  virtual void FileEnd() {}
+    ArchiveExtractor extractor;
+    ArchiveReader reader( extractor );
+    InflateStream inflator( reader );
 
-  virtual void End() {}
-};
+    uint8_t buffer[4096];
 
-int main()
-{
-  ArchiveListStream list;
-  ArchiveReader reader( list );
-  InflateStream inflate( reader );
-
-  char buffer[4096];
-
-  while ( true )
-  {
-    ssize_t nread = read( 0, buffer, sizeof( buffer ) );
-    if ( nread == 0 )
+    while ( true )
     {
-      inflate.End();
-      return 0;
+      size_t nread = archive->Read( buffer, sizeof( buffer ) );
+
+      if ( nread == 0 )
+        break;
+      
+      inflator.Write( DataRef( buffer, buffer + nread ) );
     }
 
-    if ( nread < 0 )
-    {
-      std::cerr << "Error reading from stdin" << std::endl;
-      return 1;
-    }
-
-    inflate.Write( DataRef( (uint8_t*)buffer, (uint8_t*)buffer + nread ) );
+    inflator.End();
   }
+  catch ( const std::exception& err )
+  {
+    std::cerr << "Error extracting archive: " << err.what() << std::endl;
+    return 1;
+  }
+
+  return 0;
 }
