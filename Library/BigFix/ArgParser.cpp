@@ -1,5 +1,6 @@
 #include "ArgParser.h"
 #include "BigFix/Error.h"
+#include <algorithm>
 
 namespace BigFix
 {
