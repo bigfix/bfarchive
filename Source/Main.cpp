@@ -4,6 +4,7 @@
 #include "BigFix/ArchiveReader.h"
 #include "BigFix/ArgParser.h"
 #include "BigFix/DataRef.h"
+#include "BigFix/DeflateStream.h"
 #include "BigFix/Filesystem.h"
 #include "BigFix/InflateStream.h"
 #include "Version.h"
@@ -54,6 +55,12 @@ static int CreateArchive( const std::vector<std::string>& arguments,
     return 1;
   }
 
+  if ( arguments.size() < 2 )
+  {
+    std::cerr << "Must supply output archive name" << std::endl;
+    return 1;
+  }
+
   if ( arguments.size() > 2 )
   {
     std::cerr << "Too many arguments" << std::endl;
@@ -63,7 +70,9 @@ static int CreateArchive( const std::vector<std::string>& arguments,
   FileStream fileStream;
   fileStream.Reset( OpenNewFile( arguments[1].c_str() ) );
 
-  ArchiveCreator creator( fileStream, verbose );
+  DeflateStream deflateStream( fileStream );
+
+  ArchiveCreator creator( deflateStream, verbose );
   creator.Create( arguments[0].c_str() );
   return 0;
 }

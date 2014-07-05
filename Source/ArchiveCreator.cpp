@@ -11,38 +11,53 @@ ArchiveCreator::ArchiveCreator( Stream& output, bool verbose )
 {
 }
 
-void ArchiveCreator::Create( const char* path )
+void ArchiveCreator::Create( const std::string& path )
 {
-  RecursivelyAddDir( path );
+  RecursivelyAddDir( path, "" );
   m_writer.End();
 }
 
-void ArchiveCreator::RecursivelyAddDir( const char* path )
+static std::string JoinArchivePath( const std::string& parent,
+                                    const std::string& child )
 {
-  std::vector<DirectoryEntry> entries = ReadDir( path );
+  if ( parent.empty() || parent == "." )
+    return child;
 
-  for ( std::vector<DirectoryEntry>::const_iterator it = entries.begin(),
-                                                    end = entries.end();
+  return parent + "/" + child;
+}
+
+void ArchiveCreator::RecursivelyAddDir( const std::string& filePath,
+                                        const std::string& archivePath )
+{
+  std::vector<std::string> entries = ReadDir( filePath.c_str() );
+
+  for ( std::vector<std::string>::const_iterator it = entries.begin(),
+                                                 end = entries.end();
         it != end;
         it++ )
   {
-    if ( it->IsDirectory() )
-    {
-      if ( m_verbose )
-        std::cout << it->Path() << std::endl;
+    std::string relativeFilePath = JoinFilePath( filePath, *it );
+    std::string relativeArchivePath = JoinArchivePath( archivePath, *it );
 
-      m_writer.Directory( it->Path().c_str(), DateTime() );
-      RecursivelyAddDir( it->Path().c_str() );
-    }
-    else if ( it->IsFile() )
+    FileStatus status = Stat( relativeFilePath.c_str() );
+
+    if ( status.IsDirectory() )
     {
       if ( m_verbose )
-        std::cout << it->Path() << std::endl;
+        std::cout << relativeArchivePath << std::endl;
+
+      m_writer.Directory( relativeArchivePath.c_str(), DateTime() );
+      RecursivelyAddDir( relativeFilePath, relativeArchivePath );
+    }
+    else if ( status.IsFile() )
+    {
+      if ( m_verbose )
+        std::cout << relativeArchivePath << std::endl;
 
       Stream& contentStream =
-        m_writer.File( it->Path().c_str(), DateTime(), it->Length() );
+        m_writer.File( relativeArchivePath.c_str(), DateTime(), status.Length() );
 
-      ReadFile( it->Path().c_str(), contentStream );
+      ReadFile( relativeFilePath.c_str(), contentStream );
     }
   }
 }

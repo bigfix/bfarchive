@@ -83,6 +83,25 @@ void MakeDir( const char* path )
     throw Error( "Failed to create directory" );
 }
 
+FileStatus Stat( const char* path )
+{
+  struct stat stats;
+
+  if ( stat( path, &stats ) )
+    throw Error( "Failed to stat file" );
+
+  return FileStatus(
+    stats.st_size, S_ISDIR( stats.st_mode ), S_ISREG( stats.st_mode ) );
+}
+
+std::string JoinFilePath( const std::string& parent, const std::string& child )
+{
+  if ( parent.empty() || parent == "." )
+    return child;
+
+  return parent + "/" + child;
+}
+
 void ReadStdIn( Stream& stream )
 {
   uint8_t buffer[4096];
@@ -127,11 +146,11 @@ static bool IsDots( const char* path )
   return false;
 }
 
-std::vector<DirectoryEntry> ReadDir( const char* path )
+std::vector<std::string> ReadDir( const char* path )
 {
   OpenDir dir( path );
 
-  std::vector<DirectoryEntry> entries;
+  std::vector<std::string> entries;
 
   while ( true )
   {
@@ -144,19 +163,8 @@ std::vector<DirectoryEntry> ReadDir( const char* path )
     if ( !result )
       break;
 
-    if ( IsDots( result->d_name ) )
-      continue;
-
-    std::string child = path;
-    child += "/";
-    child += result->d_name;
-
-    struct stat info;
-    if ( stat( child.c_str(), &info ) )
-      throw Error( "Failed to stat directory entry" );
-
-    entries.push_back( DirectoryEntry(
-      child, info.st_size, S_ISDIR( info.st_mode ), S_ISREG( info.st_mode ) ) );
+    if ( !IsDots( result->d_name ) )
+      entries.push_back( result->d_name );
   }
 
   return entries;

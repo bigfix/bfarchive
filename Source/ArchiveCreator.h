@@ -2,16 +2,18 @@
 #define ArchiveCreator_h
 
 #include "BigFix/ArchiveWriter.h"
+#include <string>
 
 class ArchiveCreator
 {
 public:
   ArchiveCreator( BigFix::Stream& output, bool verbose );
 
-  void Create( const char* path );
+  void Create( const std::string& path );
 
 private:
-  void RecursivelyAddDir( const char* path );
+  void RecursivelyAddDir( const std::string& filePath,
+                          const std::string& archivePath );
 
   BigFix::ArchiveWriter m_writer;
   bool m_verbose;

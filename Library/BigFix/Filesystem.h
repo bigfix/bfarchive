@@ -34,22 +34,16 @@ private:
   std::auto_ptr<File> m_file;
 };
 
-class DirectoryEntry
+class FileStatus
 {
 public:
-  DirectoryEntry( const std::string& path,
-                  uint64_t length,
-                  bool isDirectory,
-                  bool isFile );
+  FileStatus( uint64_t length, bool isDirectory, bool isFile );
 
-  const std::string& Path() const { return m_path; }
   uint64_t Length() const { return m_length; }
-
   bool IsDirectory() const { return m_isDirectory; }
   bool IsFile() const { return m_isFile; }
 
 private:
-  std::string m_path;
   uint64_t m_length;
   bool m_isDirectory;
   bool m_isFile;
@@ -60,10 +54,13 @@ std::auto_ptr<File> OpenExistingFile( const char* path );
 
 void MakeDir( const char* path );
 
+FileStatus Stat( const char* path );
+
+std::string JoinFilePath( const std::string& parent, const std::string& child );
+
 void ReadStdIn( Stream& );
 void ReadFile( const char* path, Stream& );
-
-std::vector<DirectoryEntry> ReadDir( const char* path );
+std::vector<std::string> ReadDir( const char* path );
 
 }
 
