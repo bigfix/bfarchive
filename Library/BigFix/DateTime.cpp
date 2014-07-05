@@ -2,8 +2,7 @@
 #include "BigFix/DataRef.h"
 #include "BigFix/Error.h"
 #include "BigFix/Number.h"
-#include <sstream>
-#include <stdlib.h>
+#include <stdio.h>
 
 namespace BigFix
 {
@@ -59,15 +58,6 @@ static void Verify( bool condition )
     throw Error( "Invalid datetime" );
 }
 
-static int32_t ReadTimeZone( DataRef timeZone )
-{
-  if ( timeZone[0] != '-' && timeZone[0] != '+' )
-    throw Error( "Invalid datetime: bad time zone" );
-
-  int32_t number = ReadAsciiNumber<int32_t>( timeZone.Slice( 1, 4 ) );
-  return ( timeZone[0] == '-' ) ? (-number) : number;
-}
-
 DateTime::DateTime()
   : m_year( 1970 )
   , m_month( 1 )
@@ -76,7 +66,6 @@ DateTime::DateTime()
   , m_hour( 0 )
   , m_minute( 0 )
   , m_second( 0 )
-  , m_timeZone( 0 )
 {
 }
 
@@ -99,51 +88,28 @@ DateTime::DateTime( DataRef date )
   Verify( date[22] == ':' );
   m_second = ReadAsciiNumber<uint8_t>( date.Slice( 23, 2 ) );
   Verify( date[25] == ' ' );
-  m_timeZone = ReadTimeZone( date.Slice( 26, 5 ) );
+  Verify( date.Slice( 25, 6 ) == DataRef( " +0000" ) );
 }
 
 std::string DateTime::ToString() const
 {
-  std::stringstream result;
-  result.fill( '0' );
+  char buffer[32];
 
-  result.write( reinterpret_cast<const char*>( days[m_dayOfWeek - 1].Start() ),
-                3 );
+  int status =
+    sprintf( buffer,
+             "%s, %02d %s %04d %02d:%02d:%02d +0000",
+             reinterpret_cast<const char*>( days[m_dayOfWeek - 1].Start() ),
+             static_cast<int>( m_day ),
+             reinterpret_cast<const char*>( months[m_month - 1].Start() ),
+             static_cast<int>( m_year ),
+             static_cast<int>( m_hour ),
+             static_cast<int>( m_minute ),
+             static_cast<int>( m_second ) );
 
-  result << ", ";
+  if ( status != 31 )
+    throw Error( "Failed to convert date to string" );
 
-  result.width( 2 );
-  result << static_cast<int>( m_day );
-
-  result << " ";
-
-  result.write( reinterpret_cast<const char*>( months[m_month - 1].Start() ),
-                3 );
-
-  result << " ";
-  result << static_cast<int>( m_year );
-  result << " ";
-
-  result.width( 2 );
-  result << static_cast<int>( m_hour );
-
-  result << ":";
-
-  result.width( 2 );
-  result << static_cast<int>( m_minute );
-
-  result << ":";
-
-  result.width( 2 );
-  result << static_cast<int>( m_second );
-
-  result << " ";
-  result << ( m_timeZone < 0 ? "-" : "+" );
-
-  result.width( 4 );
-  result << abs( m_timeZone );
-
-  return result.str();
+  return buffer;
 }
 
 }
