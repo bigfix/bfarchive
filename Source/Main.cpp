@@ -4,6 +4,7 @@
 #include "BigFix/DataRef.h"
 #include "BigFix/Filesystem.h"
 #include "BigFix/InflateStream.h"
+#include "Version.h"
 #include <iostream>
 
 using namespace BigFix;
@@ -25,6 +26,11 @@ static void PrintUsage()
        "  -V, --version    Print the version and exit\n";
 }
 
+static void PrintVersion()
+{
+  std::cout << BFARCHIVE_VERSION_STRING << "\n";
+}
+
 int main( int argc, const char* argv[] )
 {
   try
@@ -44,7 +50,7 @@ int main( int argc, const char* argv[] )
     }
     else if ( argParser.HasOption( "version" ) )
     {
-      std::cout << "Print version\n";
+      PrintVersion();
     }
     else if ( argParser.HasOption( "create" ) )
     {
