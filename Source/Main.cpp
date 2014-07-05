@@ -15,7 +15,7 @@ static void PrintUsage()
   std::cout
     << "Usage:\n"
        "  bfarchive -a <source file or directory> <name of archive>\n"
-       "  bfarchive -x <source archive> <target directory>\n"
+       "  bfarchive -x <source archive> [target directory]\n"
        "  bfarchive -l <source archive>\n"
        "\n"
        "Where:\n"
@@ -29,7 +29,7 @@ static void PrintUsage()
 
 static int PrintVersion()
 {
-  std::cout << BFARCHIVE_VERSION_STRING << "\n";
+  std::cout << BFARCHIVE_VERSION_STRING << std::endl;
   return 0;
 }
 
@@ -54,15 +54,27 @@ static int CreateArchive( const std::vector<std::string>& arguments,
 static int ExtractArchive( const std::vector<std::string>& arguments,
                            bool verbose )
 {
-  if ( arguments.size() != 2 )
+  if ( arguments.empty() )
   {
-    std::cerr << "Must supply two arguments to extract an archive\n";
+    std::cerr << "Must supply an archive to list" << std::endl;
     return 1;
   }
 
-  MakeDir( arguments[1].c_str() );
+  if ( arguments.size() > 2 )
+  {
+    std::cerr << "Too many arguments" << std::endl;
+    return 1;
+  }
 
-  ArchiveExtractor extractor( arguments[1].c_str(), verbose );
+  std::string outputDir = ".";
+
+  if ( arguments.size() == 2 )
+  {
+    MakeDir( arguments[1].c_str() );
+    outputDir = arguments[1];
+  }
+
+  ArchiveExtractor extractor( outputDir, verbose );
   ReadArchive( arguments[0], extractor );
   return 0;
 }
@@ -71,13 +83,13 @@ static int ListArchive( const std::vector<std::string>& arguments )
 {
   if ( arguments.empty() )
   {
-    std::cerr << "Must supply an archive to list\n";
+    std::cerr << "Must supply an archive to list" << std::endl;
     return 1;
   }
 
   if ( arguments.size() > 1 )
   {
-    std::cerr << "Too many arguments\n";
+    std::cerr << "Too many arguments" << std::endl;
     return 1;
   }
 

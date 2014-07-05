@@ -5,7 +5,7 @@
 
 using namespace BigFix;
 
-ArchiveExtractor::ArchiveExtractor( const char* outputDir, bool verbose )
+ArchiveExtractor::ArchiveExtractor( const std::string& outputDir, bool verbose )
   : m_outputDir( outputDir ), m_verbose( verbose )
 {
 }

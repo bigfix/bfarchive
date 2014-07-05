@@ -8,7 +8,7 @@
 class ArchiveExtractor : public BigFix::ArchiveStream
 {
 public:
-  explicit ArchiveExtractor( const char* outputDir, bool verbose );
+  explicit ArchiveExtractor( const std::string& outputDir, bool verbose );
 
   virtual void Directory( const char* path,
                           const BigFix::DateTime& mtime );
