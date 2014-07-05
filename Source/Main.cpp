@@ -61,8 +61,8 @@ static int ExtractArchive( const std::vector<std::string>& arguments,
   }
 
   MakeDir( arguments[1].c_str() );
-  
-  ArchiveExtractor extractor( arguments[1].c_str() );
+
+  ArchiveExtractor extractor( arguments[1].c_str(), verbose );
   ReadArchive( arguments[0], extractor );
   return 0;
 }
