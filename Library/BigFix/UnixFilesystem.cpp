@@ -82,4 +82,24 @@ void MakeDir( const char* path )
     throw Error( "Failed to create directory" );
 }
 
+void ReadStdIn( Stream& stream )
+{
+  uint8_t buffer[4096];
+
+  while ( true )
+  {
+    ssize_t nread = read( 0, buffer, sizeof( buffer ) );
+
+    if ( nread < 0 )
+      throw Error( "Failed to read from stdin" );
+
+    if ( nread == 0 )
+      break;
+
+    stream.Write( DataRef( buffer, buffer + nread ) );
+  }
+
+  stream.End();
+}
+
 }

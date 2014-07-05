@@ -1,4 +1,5 @@
 #include "ArchiveExtractor.h"
+#include "ArchiveLister.h"
 #include "BigFix/ArchiveReader.h"
 #include "BigFix/ArgParser.h"
 #include "BigFix/DataRef.h"
@@ -26,9 +27,50 @@ static void PrintUsage()
        "  -V, --version    Print the version and exit\n";
 }
 
-static void PrintVersion()
+static int PrintVersion()
 {
   std::cout << BFARCHIVE_VERSION_STRING << "\n";
+  return 0;
+}
+
+static int CreateArchive( const std::vector<std::string>& arguments,
+                          bool verbose )
+{
+  std::cout << "CreateArchive" << std::endl;
+  return 0;
+}
+
+static int ExtractArchive( const std::vector<std::string>& arguments,
+                           bool verbose )
+{
+  std::cout << "ExtractArchive" << std::endl;
+  return 0;
+}
+
+static int ListArchive( const std::vector<std::string>& arguments )
+{
+  if ( arguments.empty() )
+  {
+    std::cerr << "Must supply an archive to list\n";
+    return 1;
+  }
+
+  if ( arguments.size() > 1 )
+  {
+    std::cerr << "Too many arguments\n";
+    return 1;
+  }
+
+  ArchiveLister lister;
+  ArchiveReader reader( lister );
+  InflateStream inflate( reader );
+
+  if ( arguments[0] == "-" )
+    ReadStdIn( inflate );
+  else
+    ReadFile( arguments[0].c_str(), inflate );
+
+  return 0;
 }
 
 int main( int argc, const char* argv[] )
@@ -47,34 +89,29 @@ int main( int argc, const char* argv[] )
     if ( argParser.HasOption( "help" ) )
     {
       PrintUsage();
+      return 0;
     }
-    else if ( argParser.HasOption( "version" ) )
-    {
-      PrintVersion();
-    }
-    else if ( argParser.HasOption( "create" ) )
-    {
-      std::cout << "Create archive\n";
 
-      if ( argParser.HasOption( "verbose" ) )
-        std::cout << "Verbose\n";
-    }
-    else if ( argParser.HasOption( "extract" ) )
-    {
-      std::cout << "Extract archive\n";
+    if ( argParser.HasOption( "version" ) )
+      return PrintVersion();
 
-      if ( argParser.HasOption( "verbose" ) )
-        std::cout << "Verbose\n";
-    }
-    else if ( argParser.HasOption( "list" ) )
+    if ( argParser.HasOption( "create" ) )
     {
-      std::cout << "List archive\n";
+      return CreateArchive( argParser.Arguments(),
+                            argParser.HasOption( "verbose" ) );
     }
-    else
+
+    if ( argParser.HasOption( "extract" ) )
     {
-      PrintUsage();
-      return 1;
+      return ExtractArchive( argParser.Arguments(),
+                             argParser.HasOption( "verbose" ) );
     }
+
+    if ( argParser.HasOption( "list" ) )
+      return ListArchive( argParser.Arguments() );
+
+    PrintUsage();
+    return 1;
   }
   catch ( const std::exception& err )
   {

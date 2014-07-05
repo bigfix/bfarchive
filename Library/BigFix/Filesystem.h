@@ -37,6 +37,9 @@ std::auto_ptr<File> OpenExistingFile( const char* path );
 
 void MakeDir( const char* path );
 
+void ReadStdIn( Stream& );
+void ReadFile( const char* path, Stream& );
+
 }
 
 #endif
