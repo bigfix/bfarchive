@@ -13,19 +13,19 @@ ArchiveWriter::ArchiveWriter( Stream& output ) : m_output( output )
 {
 }
 
-void ArchiveWriter::Directory( const char* name, const DateTime& mtime )
+void ArchiveWriter::Directory( const char* path, const DateTime& mtime )
 {
-  std::string nameWithSlash = name;
-  nameWithSlash += "/";
+  std::string pathWithSlash = path;
+  pathWithSlash += "/";
 
-  WriteHeader( nameWithSlash.c_str(), mtime, 0 );
+  WriteHeader( pathWithSlash.c_str(), mtime, 0 );
 }
 
-Stream& ArchiveWriter::File( const char* name,
+Stream& ArchiveWriter::File( const char* path,
                              const DateTime& mtime,
                              uint64_t length )
 {
-  WriteHeader( name, mtime, length );
+  WriteHeader( path, mtime, length );
 
   m_append.Reset( m_output );
   return m_append;
@@ -37,22 +37,22 @@ void ArchiveWriter::End()
   m_output.End();
 }
 
-static bool IsAscii( const char* name )
+static bool IsAscii( const char* path )
 {
-  for ( const char* it = name; *it; it++ )
+  for ( const char* it = path; *it; it++ )
     if ( static_cast<uint8_t>( *it ) >= 128 )
       return false;
 
   return true;
 }
 
-void ArchiveWriter::WriteHeader( const char* name,
+void ArchiveWriter::WriteHeader( const char* path,
                                  const DateTime& mtime,
                                  uint64_t length )
 {
   uint8_t buffer[8];
 
-  if ( !IsAscii( name ) )
+  if ( !IsAscii( path ) )
      m_output.Write( DataRef( "2" ) );
 
   if ( length >= UINT32_MAX )
@@ -60,17 +60,17 @@ void ArchiveWriter::WriteHeader( const char* name,
   else
     m_output.Write( DataRef( "_" ) );
 
-  size_t nameLengthWithNull = strlen( name ) + 1;
+  size_t pathLengthWithNull = strlen( path ) + 1;
 
-  if ( nameLengthWithNull > 255 )
+  if ( pathLengthWithNull > 255 )
     throw Error( "File or directory paths must be less than 255 characters" );
 
-  WriteLittleEndian( nameLengthWithNull, buffer, 1 );
+  WriteLittleEndian( pathLengthWithNull, buffer, 1 );
 
   m_output.Write( DataRef( buffer, buffer + 1 ) );
   m_output.Write(
-    DataRef( reinterpret_cast<const uint8_t*>( name ),
-             reinterpret_cast<const uint8_t*>( name ) + nameLengthWithNull ) );
+    DataRef( reinterpret_cast<const uint8_t*>( path ),
+             reinterpret_cast<const uint8_t*>( path ) + pathLengthWithNull ) );
 
   std::string mtimeString = mtime.ToString();
 

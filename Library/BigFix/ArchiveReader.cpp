@@ -4,6 +4,7 @@
 #include "BigFix/Error.h"
 #include "BigFix/Number.h"
 #include <algorithm>
+#include <string.h>
 
 namespace BigFix
 {
@@ -120,6 +121,25 @@ const uint8_t* ArchiveReader::PathLength( const uint8_t* start,
   return start + 1;
 }
 
+static bool HasDotDotComponent( DataRef path )
+{
+  const uint8_t* start = path.Start();
+  const uint8_t* end = path.End();
+
+  while ( true )
+  {
+    const uint8_t* slash = std::find( start, end, '/' );
+
+    if ( DataRef( start, slash ) == DataRef( ".." ) )
+      return true;
+
+    if ( slash == end )
+      return false;
+
+    start = slash + 1;
+  }
+}
+
 const uint8_t* ArchiveReader::Path( const uint8_t* start, const uint8_t* end )
 {
   while ( start != end && m_pos != m_length )
@@ -138,6 +158,9 @@ const uint8_t* ArchiveReader::Path( const uint8_t* start, const uint8_t* end )
       m_length--;
     else
       m_path[m_pos] = 0;
+
+    if ( HasDotDotComponent( DataRef( m_path, m_path + m_length ) ) )
+      throw Error( "Paths in archives cannot contain '..'" );
 
     m_isDirectory = ( m_length > 0 ) && ( m_path[m_length - 1] == '/' );
     m_state = STATE_DATE_LENGTH;

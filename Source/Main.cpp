@@ -28,10 +28,9 @@ int main( int argc, const char* argv[] )
   try
   {
     MakeDir( argv[3] );
-
     std::auto_ptr<File> archive = OpenExistingFile( argv[2] );
 
-    ArchiveExtractor extractor;
+    ArchiveExtractor extractor( argv[3] );
     ArchiveReader reader( extractor );
     InflateStream inflator( reader );
 

@@ -1,6 +1,7 @@
 #include "BigFix/ArchiveReader.h"
 #include "BigFix/ArchiveStream.h"
 #include "BigFix/DataRef.h"
+#include "BigFix/Error.h"
 #include "TestUtility.h"
 #include <gtest/gtest.h>
 
@@ -201,4 +202,28 @@ TEST( ArchiveReaderTest, UTF8File )
   EXPECT_TRUE( entries[0].ended );
 
   EXPECT_TRUE( output.ended );
+}
+
+static void ExpectThrow( DataRef input )
+{
+  TestArchiveStream output;
+  ArchiveReader reader( output );
+  EXPECT_THROW( WriteOneByOneAndEnd( reader, input ), Error );
+}
+
+TEST( ArchiveReaderTest, DotDotIsError )
+{
+  // The name is just '..'
+  uint8_t test1[] = { 0x5f, 0x03, 0x2e, 0x2e, 0x00 };
+  ExpectThrow( DataRef( test1, test1 + sizeof( test1 ) ) );
+
+  // The name is '../'
+  uint8_t test2[] = { 0x5f, 0x04, 0x2e, 0x2e, 0x2f, 0x00 };
+  ExpectThrow( DataRef( test2, test2 + sizeof( test2 ) ) );
+
+  // The name is 'foo/../bar'
+  uint8_t test3[] = { 0x5f, 0x0b, 0x66, 0x6f, 0x6f, 0x2f, 0x2e,
+                      0x2e, 0x2f, 0x62, 0x61, 0x72, 0x00 };
+
+  ExpectThrow( DataRef( test3, test3 + sizeof( test3 ) ) );
 }

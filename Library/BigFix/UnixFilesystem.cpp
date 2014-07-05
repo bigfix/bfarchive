@@ -43,7 +43,7 @@ void UnixFile::Write( DataRef data )
   }
 }
 
-static std::auto_ptr<File> MakeFile( int fd )
+static std::auto_ptr<File> NewFile( int fd )
 {
   if ( fd < 0 )
     throw Error( "Failed to open or create file" );
@@ -63,19 +63,22 @@ static std::auto_ptr<File> MakeFile( int fd )
   return file;
 }
 
-std::auto_ptr<File> OpenNewFile( const char* name )
+std::auto_ptr<File> OpenNewFile( const char* path )
 {
-  return MakeFile( open( name, O_WRONLY | O_CREAT | O_EXCL, S_IRWXU ) );
+  return NewFile(
+    open( path,
+          O_WRONLY | O_CREAT | O_EXCL,
+          S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH ) );
 }
 
-std::auto_ptr<File> OpenExistingFile( const char* name )
+std::auto_ptr<File> OpenExistingFile( const char* path )
 {
-  return MakeFile( open( name, O_RDONLY ) );
+  return NewFile( open( path, O_RDONLY ) );
 }
 
-void MakeDir( const char* name )
+void MakeDir( const char* path )
 {
-  if ( mkdir( name, S_IRWXU ) )
+  if ( mkdir( path, S_IRWXU ) )
     throw Error( "Failed to create directory" );
 }
 

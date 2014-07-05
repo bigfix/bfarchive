@@ -3,20 +3,24 @@
 
 #include "BigFix/ArchiveStream.h"
 #include "BigFix/Filesystem.h"
+#include <string>
 
 class ArchiveExtractor : public BigFix::ArchiveStream
 {
 public:
-  virtual void Directory( const char* name,
+  explicit ArchiveExtractor( const char* outputDir );
+
+  virtual void Directory( const char* path,
                           const BigFix::DateTime& mtime );
 
-  virtual BigFix::Stream& File( const char* name,
+  virtual BigFix::Stream& File( const char* path,
                                 const BigFix::DateTime& mtime,
                                 uint64_t length );
 
   virtual void End();
 
 private:
+  std::string m_outputDir;
   BigFix::FileStream m_fileStream;
 };
 

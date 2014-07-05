@@ -4,17 +4,23 @@
 
 using namespace BigFix;
 
-void ArchiveExtractor::Directory( const char* name,
+ArchiveExtractor::ArchiveExtractor( const char* outputDir )
+  : m_outputDir( outputDir )
+{
+}
+
+void ArchiveExtractor::Directory( const char* path,
                                   const DateTime& mtime )
 {
   throw Error( "directory extraction not supported yet" );
 }
 
-BigFix::Stream& ArchiveExtractor::File( const char* name,
+BigFix::Stream& ArchiveExtractor::File( const char* path,
                                         const DateTime& mtime,
                                         uint64_t length )
 {
-  m_fileStream.Reset( OpenNewFile( name ) );
+  std::string fullPath = m_outputDir + "/" + path;
+  m_fileStream.Reset( OpenNewFile( fullPath.c_str() ) );
   return m_fileStream;
 }
 

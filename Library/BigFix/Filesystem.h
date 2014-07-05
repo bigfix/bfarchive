@@ -32,10 +32,10 @@ private:
   std::auto_ptr<File> m_file;
 };
 
-std::auto_ptr<File> OpenNewFile( const char* name );
-std::auto_ptr<File> OpenExistingFile( const char* name );
+std::auto_ptr<File> OpenNewFile( const char* path );
+std::auto_ptr<File> OpenExistingFile( const char* path );
 
-void MakeDir( const char* name );
+void MakeDir( const char* path );
 
 }
 
