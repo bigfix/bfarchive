@@ -46,7 +46,9 @@ void ArchiveCreator::RecursivelyAddDir( const std::string& filePath,
       if ( m_verbose )
         std::cout << relativeArchivePath << std::endl;
 
-      m_writer.Directory( relativeArchivePath.c_str(), DateTime() );
+      m_writer.Directory( relativeArchivePath.c_str(),
+                          status.ModificationTime() );
+
       RecursivelyAddDir( relativeFilePath, relativeArchivePath );
     }
     else if ( status.IsFile() )
@@ -54,10 +56,11 @@ void ArchiveCreator::RecursivelyAddDir( const std::string& filePath,
       if ( m_verbose )
         std::cout << relativeArchivePath << std::endl;
 
-      Stream& contentStream =
-        m_writer.File( relativeArchivePath.c_str(), DateTime(), status.Length() );
+      Stream& contentStream = m_writer.File( relativeArchivePath.c_str(),
+                                             status.ModificationTime(),
+                                             status.Length() );
 
-      ReadFile( relativeFilePath.c_str(), contentStream );
+      StreamFile( relativeFilePath.c_str(), contentStream );
     }
   }
 }

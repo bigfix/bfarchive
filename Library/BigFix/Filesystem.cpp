@@ -23,7 +23,7 @@ void FileStream::End()
   m_file.reset();
 }
 
-void ReadFile( const char* path, Stream& stream )
+void StreamFile( const char* path, Stream& stream )
 {
   std::auto_ptr<File> file = OpenExistingFile( path );
 
@@ -42,8 +42,12 @@ void ReadFile( const char* path, Stream& stream )
   stream.End();
 }
 
-FileStatus::FileStatus( uint64_t length, bool isDirectory, bool isFile )
+FileStatus::FileStatus( uint64_t length,
+                        const DateTime& mtime,
+                        bool isDirectory,
+                        bool isFile )
   : m_length( length )
+  , m_mtime( mtime )
   , m_isDirectory( isDirectory )
   , m_isFile( isFile )
 {

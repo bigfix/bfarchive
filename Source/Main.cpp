@@ -35,15 +35,15 @@ static int PrintVersion()
   return 0;
 }
 
-static void ReadArchive( const std::string& location, ArchiveStream& stream )
+static void StreamArchive( const std::string& location, ArchiveStream& stream )
 {
   ArchiveReader reader( stream );
   InflateStream inflate( reader );
 
   if ( location == "-" )
-    ReadStdIn( inflate );
+    StreamStdIn( inflate );
   else
-    ReadFile( location.c_str(), inflate );
+    StreamFile( location.c_str(), inflate );
 }
 
 static int CreateArchive( const std::vector<std::string>& arguments,
@@ -101,7 +101,7 @@ static int ExtractArchive( const std::vector<std::string>& arguments,
   }
 
   ArchiveExtractor extractor( outputDir, verbose );
-  ReadArchive( arguments[0], extractor );
+  StreamArchive( arguments[0], extractor );
   return 0;
 }
 
@@ -120,7 +120,7 @@ static int ListArchive( const std::vector<std::string>& arguments )
   }
 
   ArchiveLister lister;
-  ReadArchive( arguments[0], lister );
+  StreamArchive( arguments[0], lister );
   return 0;
 }
 

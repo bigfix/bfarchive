@@ -5,6 +5,17 @@
 #include "BigFix/Filesystem.h"
 #include <string>
 
+class ArchiveExtractorFileStream : public BigFix::FileStream
+{
+public:
+  void Reset( std::auto_ptr<BigFix::File>, const BigFix::DateTime& mtime );
+
+  virtual void End();
+
+private:
+  BigFix::DateTime m_mtime;
+};
+
 class ArchiveExtractor : public BigFix::ArchiveStream
 {
 public:
@@ -22,7 +33,7 @@ public:
 private:
   std::string m_outputDir;
   bool m_verbose;
-  BigFix::FileStream m_fileStream;
+  ArchiveExtractorFileStream m_fileStream;
 };
 
 #endif

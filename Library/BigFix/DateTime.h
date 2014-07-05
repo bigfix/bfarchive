@@ -21,6 +21,7 @@ public:
             uint8_t day,
             uint8_t dayOfWeek,
             uint8_t hour,
+            uint8_t minute,
             uint8_t second );
 
   uint32_t Year() const { return m_year; }

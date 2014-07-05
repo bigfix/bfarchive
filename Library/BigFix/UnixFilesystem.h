@@ -10,14 +10,17 @@ namespace BigFix
 class UnixFile : public File
 {
 public:
-  explicit UnixFile( int fd );
+  UnixFile( int fd, const std::string& path );
   virtual ~UnixFile();
+
+  virtual void SetModificationTime( const DateTime& );
 
   virtual size_t Read( uint8_t* buffer, size_t length );
   virtual void Write( DataRef );
 
 private:
   int m_fd;
+  std::string m_path;
 };
 
 class OpenDir

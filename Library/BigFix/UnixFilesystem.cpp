@@ -4,18 +4,43 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <unistd.h>
 
 namespace BigFix
 {
 
-UnixFile::UnixFile( int fd ) : m_fd( fd )
+UnixFile::UnixFile( int fd, const std::string& path )
+  : m_fd( fd ), m_path( path )
 {
 }
 
 UnixFile::~UnixFile()
 {
   close( m_fd );
+}
+
+void UnixFile::SetModificationTime( const DateTime& mtime )
+{
+  struct tm systemTime;
+  memset( &systemTime, 0, sizeof( systemTime ) );
+
+  systemTime.tm_year = mtime.Year() - 1900;
+  systemTime.tm_mon = mtime.Month() - 1;
+  systemTime.tm_mday = mtime.Day();
+  systemTime.tm_wday = mtime.DayOfWeek() - 1;
+  systemTime.tm_hour = mtime.Hour();
+  systemTime.tm_min = mtime.Minute();
+  systemTime.tm_sec = mtime.Second();
+
+  time_t unixTime = timegm( &systemTime );
+
+  struct timeval fileTimes[2];
+  fileTimes[0].tv_sec = unixTime;
+  fileTimes[1].tv_sec = unixTime;
+
+  if ( utimes( m_path.c_str(), fileTimes ) )
+    throw Error( "Failed to set modification time" );
 }
 
 size_t UnixFile::Read( uint8_t* buffer, size_t length )
@@ -44,7 +69,7 @@ void UnixFile::Write( DataRef data )
   }
 }
 
-static std::auto_ptr<File> NewFile( int fd )
+static std::auto_ptr<File> NewFile( const char* path, int fd )
 {
   if ( fd < 0 )
     throw Error( "Failed to open or create file" );
@@ -53,7 +78,7 @@ static std::auto_ptr<File> NewFile( int fd )
 
   try
   {
-    file.reset( new UnixFile( fd ) );
+    file.reset( new UnixFile( fd, path ) );
   }
   catch ( ... )
   {
@@ -67,6 +92,7 @@ static std::auto_ptr<File> NewFile( int fd )
 std::auto_ptr<File> OpenNewFile( const char* path )
 {
   return NewFile(
+    path,
     open( path,
           O_WRONLY | O_CREAT | O_EXCL,
           S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH ) );
@@ -74,7 +100,7 @@ std::auto_ptr<File> OpenNewFile( const char* path )
 
 std::auto_ptr<File> OpenExistingFile( const char* path )
 {
-  return NewFile( open( path, O_RDONLY ) );
+  return NewFile( path, open( path, O_RDONLY ) );
 }
 
 void MakeDir( const char* path )
@@ -90,8 +116,20 @@ FileStatus Stat( const char* path )
   if ( stat( path, &stats ) )
     throw Error( "Failed to stat file" );
 
+  struct tm result;
+  if ( gmtime_r( &stats.st_mtimespec.tv_sec, &result ) == 0 )
+    throw Error( "Failed to convert file time to DateTime" );
+
+  DateTime mtime( result.tm_year + 1900,
+                  result.tm_mon + 1,
+                  result.tm_mday,
+                  result.tm_wday + 1,
+                  result.tm_hour,
+                  result.tm_min,
+                  result.tm_sec );
+
   return FileStatus(
-    stats.st_size, S_ISDIR( stats.st_mode ), S_ISREG( stats.st_mode ) );
+    stats.st_size, mtime, S_ISDIR( stats.st_mode ), S_ISREG( stats.st_mode ) );
 }
 
 std::string JoinFilePath( const std::string& parent, const std::string& child )
@@ -102,7 +140,7 @@ std::string JoinFilePath( const std::string& parent, const std::string& child )
   return parent + "/" + child;
 }
 
-void ReadStdIn( Stream& stream )
+void StreamStdIn( Stream& stream )
 {
   uint8_t buffer[4096];
 

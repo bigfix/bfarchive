@@ -91,6 +91,23 @@ DateTime::DateTime( DataRef date )
   Verify( date.Slice( 25, 6 ) == DataRef( " +0000" ) );
 }
 
+DateTime::DateTime( uint32_t year,
+                    uint8_t month,
+                    uint8_t day,
+                    uint8_t dayOfWeek,
+                    uint8_t hour,
+                    uint8_t minute,
+                    uint8_t second )
+  : m_year( year )
+  , m_month( month )
+  , m_day( day )
+  , m_dayOfWeek( dayOfWeek )
+  , m_hour( hour )
+  , m_minute( minute )
+  , m_second( second )
+{
+}
+
 std::string DateTime::ToString() const
 {
   char buffer[32];
