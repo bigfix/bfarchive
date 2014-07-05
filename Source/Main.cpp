@@ -9,12 +9,19 @@ using namespace BigFix;
 
 static void PrintUsage()
 {
-  std::cout << "Usage: bfarchive -x <source-archive> <output-directory>\n"
-               "\n"
-               "Where:\n"
-               "  -x, --extract Extract an archive\n"
-               "  -h, --help    Print this help\n"
-               "  -v, --version Print the version and exit\n";
+  std::cout
+    << "Usage:\n"
+       "  bfarchive -a <source file or directory> <name of archive>\n"
+       "  bfarchive -x <source archive> <target directory>\n"
+       "  bfarchive -l <source archive>\n"
+       "\n"
+       "Where:\n"
+       "  -a, --archive    Create an archive\n"
+       "  -h, --help       Print this help message\n"
+       "  -l, --list       List the archive contents\n"
+       "  -v, --verbose    Print every file and directory as it is processed\n"
+       "  -V, --version    Print the version and exit\n"
+       "  -x, --extract    Extract an archive\n";
 }
 
 int main( int argc, const char* argv[] )
@@ -42,7 +49,7 @@ int main( int argc, const char* argv[] )
 
       if ( nread == 0 )
         break;
-      
+
       inflator.Write( DataRef( buffer, buffer + nread ) );
     }
 
