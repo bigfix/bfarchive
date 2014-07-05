@@ -43,7 +43,23 @@ static int CreateArchive( const std::vector<std::string>& arguments,
 static int ExtractArchive( const std::vector<std::string>& arguments,
                            bool verbose )
 {
-  std::cout << "ExtractArchive" << std::endl;
+  if ( arguments.size() != 2 )
+  {
+    std::cerr << "Must supply two arguments to extract an archive\n";
+    return 1;
+  }
+
+  MakeDir( arguments[1].c_str() );
+
+  ArchiveExtractor extractor( arguments[1].c_str() );
+  ArchiveReader reader( extractor );
+  InflateStream inflate( reader );
+
+  if ( arguments[0] == "-" )
+    ReadStdIn( inflate );
+  else
+    ReadFile( arguments[0].c_str(), inflate );
+
   return 0;
 }
 

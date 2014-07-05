@@ -12,7 +12,7 @@ ArchiveExtractor::ArchiveExtractor( const char* outputDir )
 void ArchiveExtractor::Directory( const char* path,
                                   const DateTime& mtime )
 {
-  throw Error( "directory extraction not supported yet" );
+  MakeDir( path );
 }
 
 BigFix::Stream& ArchiveExtractor::File( const char* path,
