@@ -63,17 +63,17 @@ static std::auto_ptr<File> MakeFile( int fd )
   return file;
 }
 
-std::auto_ptr<File> OpenNewFile( const char* name, Encoding nameEncoding )
+std::auto_ptr<File> OpenNewFile( const char* name )
 {
   return MakeFile( open( name, O_WRONLY | O_CREAT | O_EXCL, S_IRWXU ) );
 }
 
-std::auto_ptr<File> OpenExistingFile( const char* name, Encoding nameEncoding )
+std::auto_ptr<File> OpenExistingFile( const char* name )
 {
   return MakeFile( open( name, O_RDONLY ) );
 }
 
-void MakeDir( const char* name, Encoding nameEncoding )
+void MakeDir( const char* name )
 {
   if ( mkdir( name, S_IRWXU ) )
     throw Error( "Failed to create directory" );

@@ -7,7 +7,8 @@ using namespace BigFix;
 
 TEST( DeflateStreamTest, CompressEmpty )
 {
-  VectorStream vectorStream;
+  std::vector<uint8_t> output;
+  VectorStream vectorStream( output );
   DeflateStream deflateStream( vectorStream );
 
   deflateStream.End();
@@ -18,20 +19,18 @@ TEST( DeflateStreamTest, CompressEmpty )
     0x78, 0x9c, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01
   };
 
-  ASSERT_EQ( sizeof( expected ), vectorStream.output.size() );
-  EXPECT_TRUE( std::equal(
-    vectorStream.output.begin(), vectorStream.output.end(), expected ) );
-
+  ASSERT_EQ( sizeof( expected ), output.size() );
+  EXPECT_TRUE( std::equal( output.begin(), output.end(), expected ) );
   EXPECT_TRUE( vectorStream.ended );
 }
 
 TEST( DeflateStreamTest, CompressHelloWorld )
 {
-  VectorStream vectorStream;
+  std::vector<uint8_t> output;
+  VectorStream vectorStream( output );
   DeflateStream deflateStream( vectorStream );
 
-  WriteOneByOne( deflateStream, DataRef( "Hello, world!" ) );
-  deflateStream.End();
+  WriteOneByOneAndEnd( deflateStream, DataRef( "Hello, world!" ) );
 
   uint8_t expected[] =
   {
@@ -40,9 +39,7 @@ TEST( DeflateStreamTest, CompressHelloWorld )
     0xca, 0x49, 0x51, 0x04, 0x00, 0x20, 0x5e, 0x04, 0x8a
   };
 
-  ASSERT_EQ( sizeof( expected ), vectorStream.output.size() );
-  EXPECT_TRUE( std::equal(
-    vectorStream.output.begin(), vectorStream.output.end(), expected ) );
-
+  ASSERT_EQ( sizeof( expected ), output.size() );
+  EXPECT_TRUE( std::equal( output.begin(), output.end(), expected ) );
   EXPECT_TRUE( vectorStream.ended );
 }

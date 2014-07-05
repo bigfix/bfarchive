@@ -1,8 +1,10 @@
 #ifndef BigFix_Filesystem_h
 #define BigFix_Filesystem_h
 
-#include "BigFix/Encoding.h" 
+#include "BigFix/Stream.h"
 #include <memory>
+#include <stddef.h>
+#include <stdint.h>
 
 namespace BigFix
 {
@@ -18,10 +20,22 @@ public:
   virtual void Write( DataRef ) = 0;
 };
 
-std::auto_ptr<File> OpenNewFile( const char* name, Encoding nameEncoding );
-std::auto_ptr<File> OpenExistingFile( const char* name, Encoding nameEncoding );
+class FileStream : public Stream
+{
+public:
+  void Reset( std::auto_ptr<File> );
 
-void MakeDir( const char* name, Encoding nameEncoding );
+  virtual void Write( DataRef );
+  virtual void End();
+
+private:
+  std::auto_ptr<File> m_file;
+};
+
+std::auto_ptr<File> OpenNewFile( const char* name );
+std::auto_ptr<File> OpenExistingFile( const char* name );
+
+void MakeDir( const char* name );
 
 }
 

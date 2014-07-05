@@ -7,35 +7,36 @@ using namespace BigFix;
 
 TEST( InflateStreamTest, ShortRaw )
 {
-  StringStream stringStream;
+  std::string output;
+  StringStream stringStream( output );
   InflateStream inflateStream( stringStream );
 
   DataRef data( "hello" );
 
-  WriteOneByOne( inflateStream, data );
-  inflateStream.End();
+  WriteOneByOneAndEnd( inflateStream, data );
 
-  EXPECT_EQ( "hello", stringStream.output );
+  EXPECT_EQ( "hello", output );
   EXPECT_TRUE( stringStream.ended );
 }
 
 TEST( InflateStreamTest, LongRaw )
 {
-  StringStream stringStream;
+  std::string output;
+  StringStream stringStream( output );
   InflateStream inflateStream( stringStream );
 
   DataRef data( "hello, world! blah blah blah" );
 
-  WriteOneByOne( inflateStream, data );
-  inflateStream.End();
+  WriteOneByOneAndEnd( inflateStream, data );
 
-  EXPECT_EQ( "hello, world! blah blah blah", stringStream.output );
+  EXPECT_EQ( "hello, world! blah blah blah", output );
   EXPECT_TRUE( stringStream.ended );
 }
 
 TEST( InflateStreamTest, DecompressHelloWorld )
 {
-  StringStream stringStream;
+  std::string output;
+  StringStream stringStream( output );
   InflateStream inflateStream( stringStream );
 
   uint8_t data[] =
@@ -45,16 +46,16 @@ TEST( InflateStreamTest, DecompressHelloWorld )
     0xca, 0x49, 0x51, 0x04, 0x00, 0x20, 0x5e, 0x04, 0x8a
   };
 
-  WriteOneByOne( inflateStream, DataRef( data, data + sizeof( data ) ) );
-  inflateStream.End();
+  WriteOneByOneAndEnd( inflateStream, DataRef( data, data + sizeof( data ) ) );
 
-  EXPECT_EQ( "Hello, world!", stringStream.output );
+  EXPECT_EQ( "Hello, world!", output );
   EXPECT_TRUE( stringStream.ended );
 }
 
 TEST( InflateStreamTest, DecompressEmpty )
 {
-  StringStream stringStream;
+  std::string output;
+  StringStream stringStream( output );
   InflateStream inflateStream( stringStream );
 
   uint8_t data[] =
@@ -63,9 +64,8 @@ TEST( InflateStreamTest, DecompressEmpty )
     0x78, 0x9c, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01
   };
 
-  WriteOneByOne( inflateStream, DataRef( data, data + sizeof( data ) ) );
-  inflateStream.End();
+  WriteOneByOneAndEnd( inflateStream, DataRef( data, data + sizeof( data ) ) );
 
-  EXPECT_EQ( "", stringStream.output );
+  EXPECT_EQ( "", output );
   EXPECT_TRUE( stringStream.ended );
 }

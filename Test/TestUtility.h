@@ -9,12 +9,12 @@
 class VectorStream : public BigFix::Stream
 {
 public:
-  VectorStream();
+  explicit VectorStream( std::vector<uint8_t>& );
 
   virtual void Write( BigFix::DataRef data );
   virtual void End();
 
-  std::vector<uint8_t> output;
+  std::vector<uint8_t>& output;
   bool ended;
 };
 
@@ -22,14 +22,15 @@ class StringStream : public BigFix::Stream
 {
 public:
   StringStream();
+  explicit StringStream( std::string& );
 
   virtual void Write( BigFix::DataRef data );
   virtual void End();
 
-  std::string output;
+  std::string& output;
   bool ended;
 };
 
-void WriteOneByOne( BigFix::Stream& stream, BigFix::DataRef data );
+void WriteOneByOneAndEnd( BigFix::Stream& stream, BigFix::DataRef data );
 
 #endif

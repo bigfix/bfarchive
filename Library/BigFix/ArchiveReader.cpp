@@ -9,7 +9,7 @@ namespace BigFix
 {
 
 ArchiveReader::ArchiveReader( ArchiveStream& output )
-  : m_output( output ), m_state( STATE_NAME_ENCODING )
+  : m_output( output ), m_state( STATE_PATH_ENCODING ), m_fileStream( 0 )
 {
 }
 
@@ -22,20 +22,20 @@ void ArchiveReader::Write( DataRef data )
   {
     switch ( m_state )
     {
-    case STATE_NAME_ENCODING:
-      start = NameEncoding( start, end );
+    case STATE_PATH_ENCODING:
+      start = PathEncoding( start, end );
       break;
 
     case STATE_FILE_LENGTH_LENGTH:
       start = FileLengthLength( start, end );
       break;
 
-    case STATE_NAME_LENGTH:
-      start = NameLength( start, end );
+    case STATE_PATH_LENGTH:
+      start = PathLength( start, end );
       break;
 
-    case STATE_NAME:
-      start = Name( start, end );
+    case STATE_PATH:
+      start = Path( start, end );
       break;
 
     case STATE_DATE_LENGTH:
@@ -64,17 +64,17 @@ void ArchiveReader::End()
 {
 }
 
-const uint8_t* ArchiveReader::NameEncoding( const uint8_t* start,
+const uint8_t* ArchiveReader::PathEncoding( const uint8_t* start,
                                             const uint8_t* end )
 {
   if ( *start == '2' )
   {
-    m_nameEncoding = ENCODING_UTF8;
+    m_pathIsUTF8 = true;
     start++;
   }
   else
   {
-    m_nameEncoding = ENCODING_LOCAL;
+    m_pathIsUTF8 = false;
   }
 
   m_state = STATE_FILE_LENGTH_LENGTH;
@@ -97,11 +97,11 @@ const uint8_t* ArchiveReader::FileLengthLength( const uint8_t* start,
     throw Error( "Invalid archive" );
   }
 
-  m_state = STATE_NAME_LENGTH;
+  m_state = STATE_PATH_LENGTH;
   return start + 1;
 }
 
-const uint8_t* ArchiveReader::NameLength( const uint8_t* start,
+const uint8_t* ArchiveReader::PathLength( const uint8_t* start,
                                           const uint8_t* end )
 {
   m_length = *start;
@@ -109,7 +109,7 @@ const uint8_t* ArchiveReader::NameLength( const uint8_t* start,
   if ( m_length )
   {
     m_pos = 0;
-    m_state = STATE_NAME;
+    m_state = STATE_PATH;
   }
   else
   {
@@ -120,7 +120,7 @@ const uint8_t* ArchiveReader::NameLength( const uint8_t* start,
   return start + 1;
 }
 
-const uint8_t* ArchiveReader::Name( const uint8_t* start, const uint8_t* end )
+const uint8_t* ArchiveReader::Path( const uint8_t* start, const uint8_t* end )
 {
   while ( start != end && m_pos != m_length )
   {
@@ -129,17 +129,17 @@ const uint8_t* ArchiveReader::Name( const uint8_t* start, const uint8_t* end )
     if ( c == '\\' )
       c = '/';
 
-    m_name[m_pos++] = c;
+    m_path[m_pos++] = c;
   }
 
   if ( m_pos == m_length )
   {
-    if ( m_name[m_pos - 1] == 0 )
+    if ( m_path[m_pos - 1] == 0 )
       m_length--;
     else
-      m_name[m_pos] = 0;
+      m_path[m_pos] = 0;
 
-    m_isDirectory = ( m_name[m_length - 1] == '/' );
+    m_isDirectory = ( m_length > 0 ) && ( m_path[m_length - 1] == '/' );
     m_state = STATE_DATE_LENGTH;
   }
 
@@ -186,17 +186,14 @@ const uint8_t* ArchiveReader::FileLength( const uint8_t* start,
       if ( m_fileLength )
         throw Error( "A directory has a non-zero file length." );
 
-      m_output.Directory(
-        reinterpret_cast<const char*>( m_name ), m_nameEncoding, m_mtime );
+      m_output.Directory( reinterpret_cast<const char*>( m_path ), m_mtime );
 
-      m_state = STATE_NAME_ENCODING;
+      m_state = STATE_PATH_ENCODING;
     }
     else
     {
-      m_output.FileStart( reinterpret_cast<const char*>( m_name ),
-                          m_nameEncoding,
-                          m_mtime,
-                          m_fileLength );
+      m_fileStream = &m_output.File(
+        reinterpret_cast<const char*>( m_path ), m_mtime, m_fileLength );
 
       m_filePos = 0;
       m_state = STATE_FILE;
@@ -212,7 +209,7 @@ const uint8_t* ArchiveReader::File( const uint8_t* start, const uint8_t* end )
 
   if ( amount )
   {
-    m_output.FileWrite(
+    m_fileStream->Write(
       DataRef( start, start + static_cast<size_t>( amount ) ) );
 
     start += amount;
@@ -221,8 +218,9 @@ const uint8_t* ArchiveReader::File( const uint8_t* start, const uint8_t* end )
 
   if ( m_filePos == m_fileLength )
   {
-    m_output.FileEnd();
-    m_state = STATE_NAME_ENCODING;
+    m_fileStream->End();
+    m_fileStream = 0;
+    m_state = STATE_PATH_ENCODING;
   }
 
   return start;

@@ -6,42 +6,39 @@ using namespace BigFix;
 
 TEST( ArchiveWriterTest, EmptyArchive )
 {
-  VectorStream output;
-  ArchiveWriter writer( output );
+  std::vector<uint8_t> output;
+  VectorStream vectorStream( output );
+  ArchiveWriter writer( vectorStream );
 
   writer.End();
 
   uint8_t expected[] = { 0x5f, 0x00 };
 
-  EXPECT_TRUE( output.ended );
-
-  const std::vector<uint8_t>& actual = output.output;
-  ASSERT_EQ( sizeof( expected ), actual.size() );
-
-  ASSERT_TRUE( std::equal( actual.begin(), actual.end(), expected ) );
+  ASSERT_EQ( sizeof( expected ), output.size() );
+  ASSERT_TRUE( std::equal( output.begin(), output.end(), expected ) );
+  EXPECT_TRUE( vectorStream.ended );
 }
 
 TEST( ArchiveWriterTest, BasicArchive )
 {
-  VectorStream output;
-  ArchiveWriter writer( output );
+  std::vector<uint8_t> output;
+  VectorStream vectorStream( output );
+  ArchiveWriter writer( vectorStream );
 
   writer.Directory( "hello",
-                    ENCODING_LOCAL,
                     DateTime( DataRef( "Tue, 01 Jul 2014 07:23:00 +0000" ) ) );
 
-  writer.FileStart( "hello/world.txt",
-                    ENCODING_LOCAL,
-                    DateTime( DataRef( "Tue, 01 Jul 2014 07:23:00 +0000" ) ),
-                    13 );
-  writer.FileWrite( DataRef( "Hello, world!" ) );
-  writer.FileEnd();
+  WriteAndEnd(
+    writer.File( "hello/world.txt",
+                 DateTime( DataRef( "Tue, 01 Jul 2014 07:23:00 +0000" ) ),
+                 13 ),
+    DataRef( "Hello, world!" ) );
 
-  writer.FileStart( "hello/empty.txt",
-                    ENCODING_LOCAL,
-                    DateTime( DataRef( "Tue, 01 Jul 2014 07:23:00 +0000" ) ),
-                    0 );
-  writer.FileEnd();
+  WriteAndEnd(
+    writer.File( "hello/empty.txt",
+                 DateTime( DataRef( "Tue, 01 Jul 2014 07:23:00 +0000" ) ),
+                 0 ),
+    DataRef() );
 
   writer.End();
 
@@ -63,23 +60,20 @@ TEST( ArchiveWriterTest, BasicArchive )
     0x20, 0x2b, 0x30, 0x30, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x5f, 0x00
   };
 
-  EXPECT_TRUE( output.ended );
-
-  const std::vector<uint8_t>& actual = output.output;
-  ASSERT_EQ( sizeof( expected ), actual.size() );
-  
-  ASSERT_TRUE( std::equal( actual.begin(), actual.end(), expected ) );
+  ASSERT_EQ( sizeof( expected ), output.size() );
+  ASSERT_TRUE( std::equal( output.begin(), output.end(), expected ) );
+  EXPECT_TRUE( vectorStream.ended );
 }
 
 TEST( ArchiveWriterTest, HugeFile )
 {
-  VectorStream output;
-  ArchiveWriter writer( output );
+  std::vector<uint8_t> output;
+  VectorStream vectorStream( output );
+  ArchiveWriter writer( vectorStream );
 
-  writer.FileStart( "huge_file",
-                    ENCODING_LOCAL,
-                    DateTime( DataRef( "Tue, 01 Jul 2014 07:54:26 +0000" ) ),
-                    4294967296 );
+  writer.File( "huge_file",
+               DateTime( DataRef( "Tue, 01 Jul 2014 07:54:26 +0000" ) ),
+               4294967296 );
 
   uint8_t expected[] =
   {
@@ -90,30 +84,28 @@ TEST( ArchiveWriterTest, HugeFile )
     0x01, 0x00, 0x00, 0x00
   };
 
-  const std::vector<uint8_t>& actual = output.output;
-  ASSERT_EQ( sizeof( expected ), actual.size() );
-  
-  ASSERT_TRUE( std::equal( actual.begin(), actual.end(), expected ) );
+  ASSERT_EQ( sizeof( expected ), output.size() );
+  ASSERT_TRUE( std::equal( output.begin(), output.end(), expected ) );
 }
 
 TEST( ArchiveWriterTest, UTF8File )
 {
+  std::vector<uint8_t> output;
+  VectorStream vectorStream( output );
+  ArchiveWriter writer( vectorStream );
+
   const uint8_t konnichiwa[] =
   {
     0xe3, 0x81, 0x93, 0xe3, 0x82, 0x93, 0xe3, 0x81, 0xab, 0xe3, 0x81, 0xa1,
     0xe3, 0x81, 0xaf, 0x00
   };
 
-  VectorStream output;
-  ArchiveWriter writer( output );
+  WriteAndEnd(
+    writer.File( reinterpret_cast<const char*>( konnichiwa ),
+                 DateTime( DataRef( "Tue, 01 Jul 2014 08:07:02 +0000" ) ),
+                 5 ),
+    DataRef( "hello" ) );
 
-  writer.FileStart( reinterpret_cast<const char*>( konnichiwa ),
-                    ENCODING_UTF8,
-                    DateTime( DataRef( "Tue, 01 Jul 2014 08:07:02 +0000" ) ),
-                    5 );
-
-  writer.FileWrite( DataRef( "hello" ) );
-  writer.FileEnd();
   writer.End();
 
   uint8_t expected[] =
@@ -126,11 +118,8 @@ TEST( ArchiveWriterTest, UTF8File )
     0x5f, 0x00
   };
 
-  EXPECT_TRUE( output.ended );
 
-  const std::vector<uint8_t>& actual = output.output;
-  ASSERT_EQ( sizeof( expected ), actual.size() );
-  
-  ASSERT_TRUE( std::equal( actual.begin(), actual.end(), expected ) );
-
+  ASSERT_EQ( sizeof( expected ), output.size() );
+  ASSERT_TRUE( std::equal( output.begin(), output.end(), expected ) );
+  EXPECT_TRUE( vectorStream.ended );
 }

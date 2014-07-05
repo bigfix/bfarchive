@@ -13,27 +13,21 @@ public:
   explicit ArchiveWriter( Stream& output );
 
   virtual void Directory( const char* name,
-                          Encoding nameEncoding,
                           const DateTime& mtime );
 
-  virtual void FileStart( const char* name,
-                          Encoding nameEncoding,
-                          const DateTime& mtime,
-                          uint64_t length );
-
-  virtual void FileWrite( DataRef );
-
-  virtual void FileEnd();
+  virtual Stream& File( const char* name,
+                        const DateTime& mtime,
+                        uint64_t length );
 
   virtual void End();
 
 private:
   void WriteHeader( const char* name,
-                    Encoding nameEncoding,
                     const DateTime& mtime,
                     uint64_t length );
 
   Stream& m_output;
+  AppendStream m_append;
 };
 
 }

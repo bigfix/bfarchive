@@ -3,7 +3,8 @@
 
 using namespace BigFix;
 
-VectorStream::VectorStream() : ended( false )
+VectorStream::VectorStream( std::vector<uint8_t>& output )
+  : output( output ), ended( false )
 {
 }
 
@@ -17,7 +18,8 @@ void VectorStream::End()
   ended = true;
 }
 
-StringStream::StringStream() : ended( false )
+StringStream::StringStream( std::string& output )
+  : output( output ), ended( false )
 {
 }
 
@@ -31,8 +33,10 @@ void StringStream::End()
   ended = true;
 }
 
-void WriteOneByOne( Stream& stream, DataRef data )
+void WriteOneByOneAndEnd( Stream& stream, DataRef data )
 {
   for ( const uint8_t* it = data.Start(); it != data.End(); it++ )
     stream.Write( DataRef( it, it + 1 ) );
+
+  stream.End();
 }

@@ -13,31 +13,22 @@ ArchiveWriter::ArchiveWriter( Stream& output ) : m_output( output )
 {
 }
 
-void ArchiveWriter::Directory( const char* name,
-                               Encoding nameEncoding,
-                               const DateTime& mtime )
+void ArchiveWriter::Directory( const char* name, const DateTime& mtime )
 {
   std::string nameWithSlash = name;
   nameWithSlash += "/";
 
-  WriteHeader( nameWithSlash.c_str(), nameEncoding, mtime, 0 );
+  WriteHeader( nameWithSlash.c_str(), mtime, 0 );
 }
 
-void ArchiveWriter::FileStart( const char* name,
-                               Encoding nameEncoding,
-                               const DateTime& mtime,
-                               uint64_t length )
+Stream& ArchiveWriter::File( const char* name,
+                             const DateTime& mtime,
+                             uint64_t length )
 {
-  WriteHeader( name, nameEncoding, mtime, length );
-}
+  WriteHeader( name, mtime, length );
 
-void ArchiveWriter::FileWrite( DataRef data )
-{
-  m_output.Write( data );
-}
-
-void ArchiveWriter::FileEnd()
-{
+  m_append.Reset( m_output );
+  return m_append;
 }
 
 void ArchiveWriter::End()
@@ -46,15 +37,23 @@ void ArchiveWriter::End()
   m_output.End();
 }
 
+static bool IsAscii( const char* name )
+{
+  for ( const char* it = name; *it; it++ )
+    if ( static_cast<uint8_t>( *it ) >= 128 )
+      return false;
+
+  return true;
+}
+
 void ArchiveWriter::WriteHeader( const char* name,
-                                 Encoding nameEncoding,
                                  const DateTime& mtime,
                                  uint64_t length )
 {
   uint8_t buffer[8];
 
-  if ( nameEncoding == ENCODING_UTF8 )
-    m_output.Write( DataRef( "2" ) );
+  if ( !IsAscii( name ) )
+     m_output.Write( DataRef( "2" ) );
 
   if ( length >= UINT32_MAX )
     m_output.Write( DataRef( "1" ) );
@@ -63,8 +62,8 @@ void ArchiveWriter::WriteHeader( const char* name,
 
   size_t nameLengthWithNull = strlen( name ) + 1;
 
-  if ( nameLengthWithNull >= 255 )
-    throw Error( "File or directory name is longer than 254 characters" );
+  if ( nameLengthWithNull > 255 )
+    throw Error( "File or directory paths must be less than 255 characters" );
 
   WriteLittleEndian( nameLengthWithNull, buffer, 1 );
 

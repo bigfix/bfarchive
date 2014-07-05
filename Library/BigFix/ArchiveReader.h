@@ -19,10 +19,10 @@ public:
   virtual void End();
 
 private:
-  const uint8_t* NameEncoding( const uint8_t* start, const uint8_t* end );
+  const uint8_t* PathEncoding( const uint8_t* start, const uint8_t* end );
   const uint8_t* FileLengthLength( const uint8_t* start, const uint8_t* end );
-  const uint8_t* NameLength( const uint8_t* start, const uint8_t* end );
-  const uint8_t* Name( const uint8_t* start, const uint8_t* end );
+  const uint8_t* PathLength( const uint8_t* start, const uint8_t* end );
+  const uint8_t* Path( const uint8_t* start, const uint8_t* end );
   const uint8_t* DateLength( const uint8_t* start, const uint8_t* end );
   const uint8_t* Date( const uint8_t* start, const uint8_t* end );
   const uint8_t* FileLength( const uint8_t* start, const uint8_t* end );
@@ -30,10 +30,10 @@ private:
 
   enum State
   {
-    STATE_NAME_ENCODING,
+    STATE_PATH_ENCODING,
     STATE_FILE_LENGTH_LENGTH,
-    STATE_NAME_LENGTH,
-    STATE_NAME,
+    STATE_PATH_LENGTH,
+    STATE_PATH,
     STATE_DATE_LENGTH,
     STATE_DATE,
     STATE_FILE_LENGTH,
@@ -43,15 +43,16 @@ private:
 
   ArchiveStream& m_output;
   State m_state;
-  Encoding m_nameEncoding;
   size_t m_fileLengthLength;
+  bool m_pathIsUTF8;
   bool m_isDirectory;
   DateTime m_mtime;
   size_t m_pos;
   size_t m_length;
   uint64_t m_filePos;
   uint64_t m_fileLength;
-  uint8_t m_name[256];
+  Stream* m_fileStream;
+  uint8_t m_path[256];
   uint8_t m_buffer[256];
 };
 
