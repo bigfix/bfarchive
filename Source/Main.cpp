@@ -1,3 +1,4 @@
+#include "ArchiveCreator.h"
 #include "ArchiveExtractor.h"
 #include "ArchiveLister.h"
 #include "BigFix/ArchiveReader.h"
@@ -47,7 +48,23 @@ static void ReadArchive( const std::string& location, ArchiveStream& stream )
 static int CreateArchive( const std::vector<std::string>& arguments,
                           bool verbose )
 {
-  std::cout << "CreateArchive" << std::endl;
+  if ( arguments.empty() )
+  {
+    std::cerr << "Must supply a directory or file argument" << std::endl;
+    return 1;
+  }
+
+  if ( arguments.size() > 2 )
+  {
+    std::cerr << "Too many arguments" << std::endl;
+    return 1;
+  }
+
+  FileStream fileStream;
+  fileStream.Reset( OpenNewFile( arguments[1].c_str() ) );
+
+  ArchiveCreator creator( fileStream, verbose );
+  creator.Create( arguments[0].c_str() );
   return 0;
 }
 

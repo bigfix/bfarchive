@@ -12,9 +12,10 @@ add_subdirectory(Library)
 add_subdirectory(Test)
 
 add_executable(bfarchive
-  Source/Main.cpp
+  Source/ArchiveCreator.cpp
   Source/ArchiveExtractor.cpp
   Source/ArchiveLister.cpp
+  Source/Main.cpp
 )
 
 target_compile_options(bfarchive PRIVATE ${BIGFIX_COMPILE_OPTIONS})
