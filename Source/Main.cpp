@@ -1,5 +1,6 @@
 #include "ArchiveExtractor.h"
 #include "BigFix/ArchiveReader.h"
+#include "BigFix/ArgParser.h"
 #include "BigFix/DataRef.h"
 #include "BigFix/Filesystem.h"
 #include "BigFix/InflateStream.h"
@@ -26,38 +27,51 @@ static void PrintUsage()
 
 int main( int argc, const char* argv[] )
 {
-  if ( argc != 4 )
-  {
-    PrintUsage();
-    return 1;
-  }
-
   try
   {
-    MakeDir( argv[3] );
-    std::auto_ptr<File> archive = OpenExistingFile( argv[2] );
+    ArgParser argParser;
+    argParser.AddOption( 'a', "archive" );
+    argParser.AddOption( 'h', "help" );
+    argParser.AddOption( 'l', "list" );
+    argParser.AddOption( 'v', "verbose" );
+    argParser.AddOption( 'V', "version" );
+    argParser.AddOption( 'x', "extract" );
+    argParser.Parse( argc, argv );
 
-    ArchiveExtractor extractor( argv[3] );
-    ArchiveReader reader( extractor );
-    InflateStream inflator( reader );
-
-    uint8_t buffer[4096];
-
-    while ( true )
+    if ( argParser.HasOption( 'h' ) )
     {
-      size_t nread = archive->Read( buffer, sizeof( buffer ) );
-
-      if ( nread == 0 )
-        break;
-
-      inflator.Write( DataRef( buffer, buffer + nread ) );
+      PrintUsage();
     }
+    else if ( argParser.HasOption( 'V' ) )
+    {
+      std::cout << "Print version\n";
+    }
+    else if ( argParser.HasOption( 'a' ) )
+    {
+      std::cout << "Create archive\n";
 
-    inflator.End();
+      if ( argParser.HasOption( 'v' ) )
+        std::cout << "Verbose\n";
+    }
+    else if ( argParser.HasOption( 'x' ) )
+    {
+      std::cout << "Extract archive\n";
+
+      if ( argParser.HasOption( 'v' ) )
+        std::cout << "Verbose\n";
+    }
+    else if ( argParser.HasOption( 'l' ) )
+    {
+      std::cout << "List archive\n";
+    }
+    else
+    {
+      PrintUsage();
+    }
   }
   catch ( const std::exception& err )
   {
-    std::cerr << "Error extracting archive: " << err.what() << std::endl;
+    std::cerr << "Error: " << err.what() << std::endl;
     return 1;
   }
 
