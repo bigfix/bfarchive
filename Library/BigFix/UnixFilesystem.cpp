@@ -2,6 +2,7 @@
 #include "BigFix/DataRef.h"
 #include "BigFix/Error.h"
 #include <fcntl.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -100,6 +101,65 @@ void ReadStdIn( Stream& stream )
   }
 
   stream.End();
+}
+
+OpenDir::OpenDir( const char* path )
+{
+  m_dir = opendir( path );
+
+  if ( !m_dir )
+    throw Error( "Failed to open directory" );
+}
+
+OpenDir::~OpenDir()
+{
+  closedir( m_dir );
+}
+
+static bool IsDots( const char* path )
+{
+  if ( strcmp( path, "." ) == 0 )
+    return true;
+
+  if ( strcmp( path, ".." ) == 0 )
+    return true;
+
+  return false;
+}
+
+std::vector<DirectoryEntry> ReadDir( const char* path )
+{
+  OpenDir dir( path );
+
+  std::vector<DirectoryEntry> entries;
+
+  while ( true )
+  {
+    struct dirent entry;
+    struct dirent* result;
+
+    if ( readdir_r( dir, &entry, &result ) )
+      throw Error( "Failed to read directory contents" );
+
+    if ( !result )
+      break;
+
+    if ( IsDots( result->d_name ) )
+      continue;
+
+    std::string child = path;
+    child += "/";
+    child += result->d_name;
+
+    struct stat info;
+    if ( stat( child.c_str(), &info ) )
+      throw Error( "Failed to stat directory entry" );
+
+    entries.push_back( DirectoryEntry(
+      child, info.st_size, S_ISDIR( info.st_mode ), S_ISREG( info.st_mode ) ) );
+  }
+
+  return entries;
 }
 
 }

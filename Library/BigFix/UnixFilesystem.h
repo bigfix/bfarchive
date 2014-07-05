@@ -2,6 +2,7 @@
 #define BigFix_UnixFilesystem_h
 
 #include "Filesystem.h"
+#include <dirent.h>
 
 namespace BigFix
 {
@@ -17,6 +18,21 @@ public:
 
 private:
   int m_fd;
+};
+
+class OpenDir
+{
+public:
+  explicit OpenDir( const char* path );
+  ~OpenDir();
+
+  operator DIR*() const { return m_dir; }
+
+private:
+  OpenDir( const OpenDir& );
+  OpenDir& operator=( const OpenDir& );
+
+  DIR* m_dir;
 };
 
 }

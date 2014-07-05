@@ -42,4 +42,15 @@ void ReadFile( const char* path, Stream& stream )
   stream.End();
 }
 
+DirectoryEntry::DirectoryEntry( const std::string& path,
+                                uint64_t length,
+                                bool isDirectory,
+                                bool isFile )
+  : m_path( path )
+  , m_length( length )
+  , m_isDirectory( isDirectory )
+  , m_isFile( isFile )
+{
+}
+
 }
