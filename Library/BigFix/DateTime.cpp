@@ -96,15 +96,16 @@ std::string DateTime::ToString() const
   char buffer[32];
 
   int status =
-    sprintf( buffer,
-             "%s, %02d %s %04d %02d:%02d:%02d +0000",
-             reinterpret_cast<const char*>( days[m_dayOfWeek - 1].Start() ),
-             static_cast<int>( m_day ),
-             reinterpret_cast<const char*>( months[m_month - 1].Start() ),
-             static_cast<int>( m_year ),
-             static_cast<int>( m_hour ),
-             static_cast<int>( m_minute ),
-             static_cast<int>( m_second ) );
+    snprintf( buffer,
+              sizeof( buffer ),
+              "%s, %02d %s %04d %02d:%02d:%02d +0000",
+              reinterpret_cast<const char*>( days[m_dayOfWeek - 1].Start() ),
+              static_cast<int>( m_day ),
+              reinterpret_cast<const char*>( months[m_month - 1].Start() ),
+              static_cast<int>( m_year ),
+              static_cast<int>( m_hour ),
+              static_cast<int>( m_minute ),
+              static_cast<int>( m_second ) );
 
   if ( status != 31 )
     throw Error( "Failed to convert date to string" );
