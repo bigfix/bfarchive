@@ -117,7 +117,7 @@ TEST( ArchiveReaderTest, BasicArchive )
   WriteOneByOneAndEnd( reader, DataRef( data, data + sizeof( data ) ) );
 
   const std::vector<ArchiveEntry>& entries = output.entries;
-  ASSERT_EQ( 3, entries.size() );
+  ASSERT_EQ( 3ul, entries.size() );
 
   EXPECT_TRUE( entries[0].isDirectory );
   EXPECT_EQ( "hello/", entries[0].name );
@@ -127,14 +127,14 @@ TEST( ArchiveReaderTest, BasicArchive )
   EXPECT_EQ( "hello/world.txt", entries[1].name );
   EXPECT_EQ( "Tue, 01 Jul 2014 07:23:00 +0000", entries[1].mtime.ToString() );
   EXPECT_EQ( "Hello, world!", entries[1].contents );
-  EXPECT_EQ( 13, entries[1].length );
+  EXPECT_EQ( 13ull, entries[1].length );
   EXPECT_TRUE( entries[1].ended );
 
   EXPECT_FALSE( entries[2].isDirectory );
   EXPECT_EQ( "hello/empty.txt", entries[2].name );
   EXPECT_EQ( "Tue, 01 Jul 2014 07:23:00 +0000", entries[2].mtime.ToString() );
   EXPECT_EQ( "", entries[2].contents );
-  EXPECT_EQ( 0, entries[2].length );
+  EXPECT_EQ( 0ull, entries[2].length );
   EXPECT_TRUE( entries[2].ended );
 
   EXPECT_TRUE( output.ended );
@@ -157,12 +157,12 @@ TEST( ArchiveReaderTest, HugeFile )
   WriteOneByOneAndEnd( reader, DataRef( data, data + sizeof( data ) ) );
 
   const std::vector<ArchiveEntry>& entries = output.entries;
-  ASSERT_EQ( 1, entries.size() );
+  ASSERT_EQ( 1ul, entries.size() );
 
   EXPECT_FALSE( entries[0].isDirectory );
   EXPECT_EQ( "huge_file", entries[0].name );
   EXPECT_EQ( "Tue, 01 Jul 2014 07:54:26 +0000", entries[0].mtime.ToString() );
-  EXPECT_EQ( 4294967296, entries[0].length );
+  EXPECT_EQ( 4294967296ull, entries[0].length );
   EXPECT_EQ( "", entries[0].contents );
 
   EXPECT_FALSE( output.ended );
@@ -192,12 +192,12 @@ TEST( ArchiveReaderTest, UTF8File )
   WriteOneByOneAndEnd( reader, DataRef( data, data + sizeof( data ) ) );
 
   const std::vector<ArchiveEntry>& entries = output.entries;
-  ASSERT_EQ( 1, entries.size() );
+  ASSERT_EQ( 1ul, entries.size() );
 
   EXPECT_FALSE( entries[0].isDirectory );
   EXPECT_EQ( reinterpret_cast<const char*>( konnichiwa ), entries[0].name );
   EXPECT_EQ( "Tue, 01 Jul 2014 08:07:02 +0000", entries[0].mtime.ToString() );
-  EXPECT_EQ( 5, entries[0].length );
+  EXPECT_EQ( 5ull, entries[0].length );
   EXPECT_EQ( "hello", entries[0].contents );
   EXPECT_TRUE( entries[0].ended );
 

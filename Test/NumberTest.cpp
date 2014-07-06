@@ -9,14 +9,14 @@ TEST( NumberTest, Read4ByteIntger )
 {
   uint8_t number[4] = { 0x01, 0x02, 0x03, 0x04 };
 
-  EXPECT_EQ( 67305985, ReadLittleEndian( DataRef( number, number + 4 ) ) );
+  EXPECT_EQ( 67305985ull, ReadLittleEndian( DataRef( number, number + 4 ) ) );
 }
 
 TEST( NumberTest, Read8ByteIntger )
 {
   uint8_t number[8] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
 
-  EXPECT_EQ( 578437695752307201,
+  EXPECT_EQ( 578437695752307201ull,
              ReadLittleEndian( DataRef( number, number + 8 ) ) );
 }
 
@@ -48,7 +48,7 @@ TEST( NumberTest, Write8ByteInteger )
 
 TEST( NumberTest, ReadAsciiNumber )
 {
-  EXPECT_EQ( 42, ReadAsciiNumber<uint8_t>( DataRef( "42" ) ) );
+  EXPECT_EQ( 42ul, ReadAsciiNumber<uint8_t>( DataRef( "42" ) ) );
   EXPECT_EQ( 1970, ReadAsciiNumber<int32_t>( DataRef( "1970" ) ) );
   EXPECT_THROW( ReadAsciiNumber<uint8_t>( DataRef( "hello" ) ), Error );
 }

@@ -2,6 +2,7 @@
 #include "BigFix/DataRef.h"
 #include "BigFix/Filesystem.h"
 #include "TestUtility.h"
+#include <algorithm>
 #include <gtest/gtest.h>
 
 using namespace BigFix;
@@ -102,7 +103,7 @@ TEST( FilesystemTest, Stat )
   EXPECT_FALSE( dirStatus.IsFile() );
 
   FileStatus fileStatus = Stat( Sandbox( "StatFile" ).c_str() );
-  EXPECT_EQ( 5, fileStatus.Length() );
+  EXPECT_EQ( 5ul, fileStatus.Length() );
   EXPECT_FALSE( fileStatus.IsDirectory() );
   EXPECT_TRUE( fileStatus.IsFile() );
 }
@@ -121,7 +122,10 @@ TEST( FilesystemTest, ReadDir )
   expected.push_back( "b" );
   expected.push_back( "c" );
 
-  EXPECT_EQ( expected, ReadDir( dirName.c_str() ) );
+  std::vector<std::string> actual = ReadDir( dirName.c_str() );
+  std::sort( actual.begin(), actual.end() );
+
+  EXPECT_EQ( expected, actual );
 }
 
 TEST( FilesystemTest, FileStream )

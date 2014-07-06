@@ -8,17 +8,17 @@ TEST( DataRefTest, ConstructNothing )
 {
   DataRef empty;
 
-  EXPECT_EQ( 0, empty.Length() );
+  EXPECT_EQ( 0ul, empty.Length() );
   EXPECT_TRUE( empty.IsEmpty() );
-  EXPECT_EQ( 0, empty.Start() );
-  EXPECT_EQ( 0, empty.End() );
+  EXPECT_EQ( 0ul, empty.Start() );
+  EXPECT_EQ( 0ul, empty.End() );
 }
 
 TEST( DataRefTest, ConstructLiteral )
 {
   DataRef hello( "hello" );
 
-  EXPECT_EQ( 5, hello.Length() );
+  EXPECT_EQ( 5ul, hello.Length() );
   EXPECT_FALSE( hello.IsEmpty() );
   EXPECT_TRUE( memcmp( hello.Start(), "hello", 5 ) == 0 );
   EXPECT_EQ( hello.Start() + 5, hello.End() );
@@ -29,7 +29,7 @@ TEST( DataRefTest, ConstructString )
   std::string helloString( "hello" );
   DataRef hello( helloString );
 
-  EXPECT_EQ( 5, hello.Length() );
+  EXPECT_EQ( 5ul, hello.Length() );
   EXPECT_FALSE( hello.IsEmpty() );
   EXPECT_TRUE( memcmp( hello.Start(), "hello", 5 ) == 0 );
   EXPECT_EQ( hello.Start() + 5, hello.End() );
@@ -41,7 +41,7 @@ TEST( DataRefTest, ConstructPointers )
 
   DataRef hello( helloBuffer, helloBuffer + sizeof( helloBuffer ) );
 
-  EXPECT_EQ( 5, hello.Length() );
+  EXPECT_EQ( 5ul, hello.Length() );
   EXPECT_FALSE( hello.IsEmpty() );
   EXPECT_TRUE( memcmp( hello.Start(), "hello", 5 ) == 0 );
   EXPECT_EQ( hello.Start() + 5, hello.End() );
@@ -63,10 +63,10 @@ TEST( DataRefTest, Slice )
   DataRef hel = hello.Slice( 0, 3 );
   DataRef lo = hello.Slice( 3, 2 );
 
-  EXPECT_EQ( 3, hel.Length() );
+  EXPECT_EQ( 3ul, hel.Length() );
   EXPECT_TRUE( memcmp( hel.Start(), "hel", 3 ) == 0 );
 
-  EXPECT_EQ( 2, lo.Length() );
+  EXPECT_EQ( 2ul, lo.Length() );
   EXPECT_TRUE( memcmp( lo.Start(), "lo", 2 ) == 0 );
 }
 

@@ -24,7 +24,7 @@ TEST( ArgParserTest, DashIsAnArg )
   const char* args[] = { "test", "-" };
   parser.Parse( 2, args );
 
-  ASSERT_EQ( 1, parser.Arguments().size() );
+  ASSERT_EQ( 1ul, parser.Arguments().size() );
   ASSERT_EQ( "-", parser.Arguments()[0] );
 }
 
@@ -43,7 +43,7 @@ TEST( ArgParserTest, ShortArgsTest )
   EXPECT_TRUE( parser.HasOption( 'g' ) );
   EXPECT_TRUE( parser.HasOption( "goodbye" ) );
 
-  ASSERT_EQ( 1, parser.Arguments().size() );
+  ASSERT_EQ( 1ul, parser.Arguments().size() );
   ASSERT_EQ( "foo", parser.Arguments()[0] );
 }
 
@@ -62,6 +62,6 @@ TEST( ArgParserTest, LongArgsTest )
   EXPECT_TRUE( parser.HasOption( 'g' ) );
   EXPECT_TRUE( parser.HasOption( "goodbye" ) );
 
-  ASSERT_EQ( 1, parser.Arguments().size() );
+  ASSERT_EQ( 1ul, parser.Arguments().size() );
   ASSERT_EQ( "foo", parser.Arguments()[0] );
 }

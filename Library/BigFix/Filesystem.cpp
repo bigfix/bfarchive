@@ -1,5 +1,6 @@
 #include "Filesystem.h"
 #include "BigFix/DataRef.h"
+#include <string.h>
 
 namespace BigFix
 {
