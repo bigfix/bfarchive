@@ -32,7 +32,7 @@ add_custom_target(unit
 
 add_custom_target(integration
   DEPENDS bfarchive unit
-  COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/BFArchiveTest.py
+  COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/BFArchiveTest.py $<TARGET_FILE:bfarchive>
 )
 
 add_custom_target(test DEPENDS unit integration)

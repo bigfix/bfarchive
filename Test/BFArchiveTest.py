@@ -2,23 +2,21 @@ import unittest, shutil, os, hashlib, sys
 from subprocess import Popen, PIPE
 
 def run(args):
-  binary = '../../bfarchive'
   process = Popen([binary] + args, stdout=PIPE, stderr=PIPE)
   (stdout, stderr) = process.communicate();
   return (process.returncode, stdout, stderr)
 
 def run_stdin(args, stdinput):
-  binary = '../../bfarchive'
   process = Popen([binary] + args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
   (stdout, stderr) = process.communicate(stdinput);
   return (process.returncode, stdout, stderr)
 
 def read_file(path):
-  with open(path, 'r') as content_file:
+  with open(path, 'rb') as content_file:
     return content_file.read()
 
 def write_file(path, contents):
-  with open(path, 'w') as content_file:
+  with open(path, 'wb') as content_file:
     return content_file.write(contents)
 
 def hash_file(path):
@@ -73,7 +71,7 @@ class TestVersion(unittest.TestCase):
 
   def verifyResult(self, (exitcode, stdout, stderr)):
     self.assertEqual(exitcode, 0)
-    self.assertRegexpMatches(stdout, '^[0-9]+\.[0-9]+\.[0-9]+$')
+    self.assertRegexpMatches(stdout, '^[0-9]+\.[0-9]+\.[0-9]+')
 
   def test_short_arg(self):
     self.verifyResult(run(['-V']))
@@ -91,7 +89,7 @@ class TestCreateDirectoryArchive(unittest.TestCase):
   def verifyVerbose(self, (exitcode, stdout, stderr)):
     self.assertEqual(exitcode, 0)
     self.assertEqual(stderr, "")
-    self.assertEqual(stdout.split('\n'), westeros_contents() + [''])
+    self.assertEqual(stdout.splitlines(), westeros_contents())
 
   def test_short_silent(self):
     self.verifySilent(run(['-a', 'Westeros', 'WesterosShort']))
@@ -121,7 +119,7 @@ class TestCreateFileArchive(unittest.TestCase):
   def verifyVerbose(self, (exitcode, stdout, stderr)):
     self.assertEqual(exitcode, 0)
     self.assertEqual(stderr, "")
-    self.assertEqual(stdout.split('\n'), ['hodor.txt', ''])
+    self.assertEqual(stdout.splitlines(), ['hodor.txt'])
 
   def test_short_silent(self):
     self.verifyVerbose(run(['-av', 'hodor.txt', 'HodorArchive']))
@@ -131,7 +129,7 @@ class TestListArchive(unittest.TestCase):
   def verifyResult(self, (exitcode, stdout, stderr)):
     self.assertEqual(exitcode, 0)
     self.assertEqual(stderr, "")
-    self.assertEqual(stdout.split('\n'), westeros_contents() + [''])
+    self.assertEqual(stdout.splitlines(), westeros_contents())
 
   def test_short_arg_with_file(self):
     self.verifyResult(run(['-l', 'WesterosShort']))
@@ -147,5 +145,6 @@ class TestListArchive(unittest.TestCase):
     contents = read_file('WesterosShort')
     self.verifyResult(run_stdin(['--list', '-'], contents))
 
+binary = sys.argv.pop()
 reset_sandbox()
 unittest.main()
