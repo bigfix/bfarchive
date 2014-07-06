@@ -51,7 +51,7 @@ decompress the file, then parse the contents of the tape archive.
 Compression Format
 ---
 
-First there is a `8 byte` header that is always `##SC001` (including the null
+First there is a `8 byte` header that is always `"##SC001"` (including the null
 terminator). In hex this is:
 
     0x23, 0x23, 0x53, 0x43, 0x30, 0x30, 0x31, 0x00
