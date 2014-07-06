@@ -15,12 +15,12 @@ TEST( LocalPathToUTF8PathTest, AsciiPath )
 // To have this test work the same in all locales, we always use code page 932,
 // which is shift-jis. The actual implementation will use CP_ACP.
 
-#ifdef _WIN32
-
 static const uint8_t konnichiwa_shiftjis[] =
 {
   0x82, 0xB1, 0x82, 0xF1, 0x82, 0xC9, 0x82, 0xBF, 0x82, 0xCD, 0x00
 };
+
+#ifdef _WIN32
 
 static const uint8_t konnichiwa_utf8[] =
 {
