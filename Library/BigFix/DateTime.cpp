@@ -108,6 +108,10 @@ DateTime::DateTime( uint32_t year,
 {
 }
 
+#ifdef _WIN32
+#define snprintf _snprintf_s
+#endif
+
 std::string DateTime::ToString() const
 {
   char buffer[32];

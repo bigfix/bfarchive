@@ -14,6 +14,7 @@ list(APPEND SOURCES
 )
 
 if(WIN32)
+  list(APPEND SOURCES BigFix/WindowsFilesystem.cpp)
 else()
   list(APPEND SOURCES BigFix/UnixFilesystem.cpp)
 endif()
