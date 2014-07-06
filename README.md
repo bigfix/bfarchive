@@ -27,7 +27,7 @@ the current directory.
     
 ### Reading from stdin
 
-Like `tar`, if the archive argument is `-`, then BFArchive will read the archive
+If the archive file argument is `-`, then BFArchive will read the archive
 contents from stdin. For example, you can list the contents of the defunct games
 site like this:
 
@@ -35,9 +35,9 @@ site like this:
     
 ### Verbose output
 
-Like `tar`, if you add a `v` or `--verbose` when creating or extracting an
-archive, BFArchive will output the name of every file and directory as it is
-processing it.
+If you add `v` or `--verbose` when creating or extracting an archive,
+BFArchive will output the name of every file and directory as it is processing
+it.
 
     $ bfarchive -xv some_archive /some/folder
 
