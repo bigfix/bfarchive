@@ -48,8 +48,7 @@ The BigFix archive format first creates a tape archive of all of the contents
 of the directory, then compresses it. To extract an archive, you have to first
 decompress the file, then parse the contents of the tape archive.
 
-Compression Format
----
+### Compression Format
 
 First there is a `8 byte` header that is always `"##SC001"` (including the null
 terminator). In hex this is:
@@ -61,8 +60,7 @@ Next there is a `4 byte` file checksum. This can sometimes be all zero.
 Finally, the remainder of the file is compressed using the zlib `deflate`
 function. It can be decompressed using the zlib `inflate` function.
 
-Archive Format
----
+### Archive Format
 
 The archive is a list of file and directory entries. Each entry is encoded in
 the following format:
