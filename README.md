@@ -77,7 +77,7 @@ the following format:
 * `<path length> bytes`: File or directory path. If this ends with a `'/'`, then
   it's a directory.
 * `1 byte`: Date length.
-* `<date length> bytes`: The modification date.
+* `<date length> bytes`: The modification date string.
 * `4 bytes` or `8 bytes`: The file length. The length of this field depends on
   the entry header.
 * `<file length> bytes`: The file contents.
