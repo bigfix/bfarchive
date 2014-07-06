@@ -11,6 +11,18 @@ else()
   set(BFARCHIVE_RESOURCE_FILE Source/Version.rc)
 endif()
 
+# Statically link the CRT on Windows. There's got to be a better way to do this.
+if(MSVC)
+  foreach(flag
+    CMAKE_C_FLAGS CMAKE_CXX_FLAGS
+    CMAKE_C_FLAGS_DEBUG CMAKE_CXX_FLAGS_DEBUG
+    CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS_RELEASE
+    CMAKE_C_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_MINSIZEREL 
+    CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+    string(REPLACE "/MD" "/MT" ${flag} "${${flag}}")
+  endforeach()
+endif(MSVC)
+
 add_subdirectory(External/zlib)
 add_subdirectory(External/gtest)
 add_subdirectory(Library)
