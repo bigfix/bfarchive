@@ -82,15 +82,10 @@ TEST( FilesystemTest, SetAndGetModificationTime )
   std::string fileName = Sandbox( "SetAndGetModificationTime" );
   DateTime mtime( DataRef( "Sun, 11 Mar 1984 08:23:42 +0000" ) );
 
-  {
-    std::auto_ptr<File> file = OpenNewFile( fileName.c_str() );
-    file->SetModificationTime( mtime );
-  }
+  OpenNewFile( fileName.c_str() )->SetModificationTime( mtime );
 
-  {
-    FileStatus status = Stat( fileName.c_str() );
-    EXPECT_EQ( mtime.ToString(), status.ModificationTime().ToString() );
-  }
+  FileStatus status = Stat( fileName.c_str() );
+  EXPECT_EQ( mtime.ToString(), status.ModificationTime().ToString() );
 }
 
 TEST( FilesystemTest, Stat )
