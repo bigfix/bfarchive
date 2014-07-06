@@ -5,7 +5,7 @@
 #include "BigFix/Filesystem.h"
 #include "BigFix/Number.h"
 #include "BigFix/Stream.h"
-#include <string.h>
+#include <limits>
 
 namespace BigFix
 {
@@ -47,7 +47,7 @@ void ArchiveWriter::WriteHeader( const char* path,
   if ( !IsAscii( path ) )
      m_output.Write( DataRef( "2" ) );
 
-  if ( length >= UINT32_MAX )
+  if ( length > std::numeric_limits<uint32_t>::max() )
     m_output.Write( DataRef( "1" ) );
   else
     m_output.Write( DataRef( "_" ) );
@@ -71,7 +71,7 @@ void ArchiveWriter::WriteHeader( const char* path,
   m_output.Write( DataRef( buffer, buffer + 1 ) );  
   m_output.Write( DataRef( mtimeString ) );
 
-  if ( length >= UINT32_MAX )
+  if ( length > std::numeric_limits<uint32_t>::max() )
   {
     WriteLittleEndian( length, buffer, 8 );
     m_output.Write( DataRef( buffer, buffer + 8 ) );
