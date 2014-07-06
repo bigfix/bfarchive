@@ -44,8 +44,9 @@ it.
 File Format
 ===
 
-The BigFix archive format serializes the contents of a directory into one
-compressed file.
+The BigFix archive format first creates a tape archive of all of the contents
+of the directory, then compresses it. To extract an archive, you have to first
+decompress the file, then parse the contents of the tape archive.
 
 Compression Format
 ---
