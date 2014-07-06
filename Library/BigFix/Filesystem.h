@@ -74,6 +74,7 @@ bool IsAscii( const char* path );
 bool IsDots( const char* path );
 
 std::string LocalPathToUTF8Path( const char* path );
+std::string LocalPathToUTF8Path( const char* path, int codepage );
 
 }
 

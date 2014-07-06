@@ -189,10 +189,16 @@ std::vector<std::string> ReadDir( const char* path )
   return entries;
 }
 
+// This non-implementation of LocalPathToUTF8Path isn't correct, but there isn't
+// a correct thing to do in all cases.
+
 std::string LocalPathToUTF8Path( const char* path )
 {
-  // This isn't always correct, but there isn't a correct thing to do in all
-  // cases.
+  return path;
+}
+
+std::string LocalPathToUTF8Path( const char* path, int codepage )
+{
   return path;
 }
 

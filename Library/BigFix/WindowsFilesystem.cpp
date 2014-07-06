@@ -258,13 +258,18 @@ std::vector<std::string> ReadDir( const char* path )
 
 std::string LocalPathToUTF8Path( const char* path )
 {
+  return LocalPathToUTF8Path( path, CP_ACP );
+}
+
+std::string LocalPathToUTF8Path( const char* path, int codepage )
+{
   if ( IsAscii( path ) )
     return path;
 
   wchar_t utf16[1024];
 
   if ( MultiByteToWideChar(
-    CP_ACP, MB_ERR_INVALID_CHARS, path, -1, utf16, _countof( utf16 ) ) == 0 )
+    codepage, MB_ERR_INVALID_CHARS, path, -1, utf16, _countof( utf16 ) ) == 0 )
   {
     throw Error( "Failed to transcode local path to utf-16" );
   }

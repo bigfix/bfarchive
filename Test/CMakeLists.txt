@@ -7,6 +7,7 @@ add_executable(runtests EXCLUDE_FROM_ALL
   DeflateStreamTest.cpp
   ErrorTest.cpp
   FilesystemTest.cpp
+  LocalPathToUTF8PathTest.cpp
   InflateStreamTest.cpp
   NumberTest.cpp
   TestUtility.cpp
