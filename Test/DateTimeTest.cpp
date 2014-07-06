@@ -35,3 +35,10 @@ TEST( DateTimeTest, ToString )
     "Sun, 11 Mar 1984 08:23:42 +0000",
     DateTime( DataRef( "Sun, 11 Mar 1984 08:23:42 +0000" ) ).ToString() );
 }
+
+TEST( DateTimeTest, FromConstructor )
+{
+  EXPECT_EQ(
+    "Sun, 11 Mar 1984 08:23:42 +0000",
+    DateTime( 1984, 3, 11, 1, 8, 23, 42 ).ToString() );
+}
