@@ -40,6 +40,8 @@ def reset_sandbox():
   write_file('Westeros/Winterfell/arya.txt', 'arya')
   write_file('Westeros/Winterfell/bran.txt', 'bran')
 
+  os.utime('Westeros/davos.txt', (447841422, 447841422))
+
   # Create the test file for creating single file archives
   write_file('hodor.txt', 'hodor')
 
@@ -144,6 +146,55 @@ class TestListArchive(unittest.TestCase):
   def test_long_arg_with_stdin(self):
     contents = read_file('WesterosShort')
     self.verifyResult(run_stdin(['--list', '-'], contents))
+
+class TestExtractDirectoryArchive(unittest.TestCase):
+
+  def verify_directory_archive(self, dir):
+    davos = read_file(os.path.join(dir, 'davos.txt'))
+    jaime = read_file(os.path.join(dir, 'Lannisport', 'jaime.txt'))
+    tyrion = read_file(os.path.join(dir, 'Lannisport', 'tyrion.txt'))
+    arya = read_file(os.path.join(dir, 'Winterfell', 'arya.txt'))
+    bran = read_file(os.path.join(dir, 'Winterfell', 'bran.txt'))
+
+    self.assertEqual(davos, 'davos')
+    self.assertEqual(jaime, 'jaime')
+    self.assertEqual(tyrion, 'tyrion')
+    self.assertEqual(arya, 'arya')
+    self.assertEqual(bran, 'bran')
+
+    davos_mtime = os.path.getmtime(os.path.join(dir, 'davos.txt'))
+    self.assertEqual(davos_mtime, 447841422)
+
+  def verifySilent(self, (exitcode, stdout, stderr)):
+    self.assertEqual(exitcode, 0)
+    self.assertEqual(stderr, "")
+    self.assertEqual(stdout, "")
+
+  def verifyVerbose(self, (exitcode, stdout, stderr)):
+    self.assertEqual(exitcode, 0)
+    self.assertEqual(stderr, "")
+    self.assertEqual(stdout.splitlines(), westeros_contents())
+
+  def test_extract_short_arg_with_file(self):
+    self.verifySilent(run(['-x', 'WesterosShort', 'WesterosShortOut']))
+    self.verify_directory_archive('WesterosShortOut')
+
+  def test_extract_long_arg_with_file(self):
+    self.verifySilent(run(['--extract', 'WesterosShort', 'WesterosLongOut']))
+    self.verify_directory_archive('WesterosLongOut')
+
+  def test_extract_verbose(self):
+    self.verifyVerbose(run(['-xv', 'WesterosShort', 'WesterosVerboseOut']))
+    self.verify_directory_archive('WesterosVerboseOut')
+
+  def test_extract_stdin(self):
+    contents = read_file('WesterosShort')
+    self.verifySilent(run_stdin(['-x', '-', 'WesterosStdinOut'], contents))
+    self.verify_directory_archive('WesterosStdinOut')
+
+  def test_z_extract_current_dir(self):
+    self.verifySilent(run(['-x', 'WesterosShort']))
+    self.verify_directory_archive('.')    
 
 binary = sys.argv.pop()
 reset_sandbox()
