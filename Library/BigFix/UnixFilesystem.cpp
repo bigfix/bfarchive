@@ -36,6 +36,8 @@ void UnixFile::SetModificationTime( const DateTime& mtime )
   time_t unixTime = timegm( &systemTime );
 
   struct timeval fileTimes[2];
+  memset( &fileTimes, 0, sizeof( fileTimes ) );
+
   fileTimes[0].tv_sec = unixTime;
   fileTimes[1].tv_sec = unixTime;
 
