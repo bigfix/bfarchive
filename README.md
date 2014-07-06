@@ -83,9 +83,11 @@ the following format:
 Building
 ===
 
-The build requires that you have [CMake](http://cmake.org/) installed. Although
-you can build within the source directory, your life will be easier if you build
-in a separate directory to avoid polluting the source directory.
+The build requires that you have [CMake](http://cmake.org/) installed. Some of
+the tests also require [Python](https://www.python.org/).
+
+Although you can build within the source directory, your life will be easier if
+you build in a separate directory to avoid polluting the source directory.
 
 ### Linux & Mac
 
