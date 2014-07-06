@@ -31,7 +31,7 @@ void DeflateStream::Write( DataRef data )
   uint8_t buffer[4096];
 
   m_zstream.next_in = const_cast<uint8_t*>( data.Start() );
-  m_zstream.avail_in = data.Length();
+  m_zstream.avail_in = static_cast<unsigned int>( data.Length() );
 
   do
   {

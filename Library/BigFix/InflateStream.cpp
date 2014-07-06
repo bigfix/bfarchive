@@ -117,7 +117,7 @@ const uint8_t* InflateStream::Compressed( const uint8_t* start,
   uint8_t buffer[4096];
 
   m_zstream.next_in = const_cast<uint8_t*>( start );
-  m_zstream.avail_in = end - start;
+  m_zstream.avail_in = static_cast<unsigned int>( end - start );
 
   do
   {

@@ -42,7 +42,7 @@ size_t WindowsFile::Read( uint8_t* buffer, size_t length )
 {
   DWORD nread;
 
-  if ( !ReadFile( m_handle, buffer, length, &nread, NULL ) )
+  if ( !ReadFile( m_handle, buffer, static_cast<DWORD>( length ), &nread, NULL ) )
     throw Error( "Failed to read file" );
 
   return nread;
@@ -57,7 +57,7 @@ void WindowsFile::Write( DataRef data )
   {
     DWORD nwritten;
 
-    if ( !WriteFile( m_handle, start, end - start, &nwritten, NULL ) )
+    if ( !WriteFile( m_handle, start, static_cast<DWORD>( end - start ), &nwritten, NULL ) )
       throw Error( "Failed to write file" );
 
     start += nwritten;
