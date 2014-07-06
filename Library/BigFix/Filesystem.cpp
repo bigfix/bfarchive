@@ -62,6 +62,17 @@ bool IsAscii( const char* path )
   return true;
 }
 
+bool IsDots( const char* path )
+{
+  if ( strcmp( path, "." ) == 0 )
+    return true;
+
+  if ( strcmp( path, ".." ) == 0 )
+    return true;
+
+  return false;
+}
+
 std::string JoinPath( const std::string& parent, const std::string& child )
 {
   if ( parent.empty() || parent == "." )

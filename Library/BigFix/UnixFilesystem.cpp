@@ -165,17 +165,6 @@ OpenDir::~OpenDir()
   closedir( m_dir );
 }
 
-static bool IsDots( const char* path )
-{
-  if ( strcmp( path, "." ) == 0 )
-    return true;
-
-  if ( strcmp( path, ".." ) == 0 )
-    return true;
-
-  return false;
-}
-
 std::vector<std::string> ReadDir( const char* path )
 {
   OpenDir dir( path );

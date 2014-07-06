@@ -71,6 +71,7 @@ void StreamFile( const char* path, Stream& );
 std::vector<std::string> ReadDir( const char* path );
 
 bool IsAscii( const char* path );
+bool IsDots( const char* path );
 
 std::string LocalPathToUTF8Path( const char* path );
 

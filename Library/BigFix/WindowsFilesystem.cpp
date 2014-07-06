@@ -219,17 +219,6 @@ void StreamStdIn( Stream& stream )
   stream.End();
 }
 
-static bool IsDots( const wchar_t* path )
-{
-  if ( wcscmp( path, L"." ) == 0 )
-    return true;
-
-  if ( wcscmp( path, L".." ) == 0 )
-    return true;
-
-  return false;
-}
-
 std::vector<std::string> ReadDir( const char* path )
 {
   std::wstring windowsPath = MakeWindowsFilePath( path );
@@ -250,8 +239,10 @@ std::vector<std::string> ReadDir( const char* path )
 
   while ( true )
   {
-    if ( !IsDots( findData.cFileName ) )
-      entries.push_back( MakePortableFilePath( findData.cFileName ) );
+    std::string child = MakePortableFilePath( findData.cFileName );
+
+    if ( !IsDots( child.c_str() ) )
+      entries.push_back( child );
 
     if ( !FindNextFile( findHandle, &findData ) )
     {
