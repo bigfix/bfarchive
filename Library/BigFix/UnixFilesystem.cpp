@@ -208,4 +208,11 @@ std::vector<std::string> ReadDir( const char* path )
   return entries;
 }
 
+std::string LocalPathToUTF8Path( const char* path )
+{
+  // This isn't always correct, but there isn't a correct thing to do in all
+  // cases.
+  return path;
+}
+
 }

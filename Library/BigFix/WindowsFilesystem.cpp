@@ -94,7 +94,7 @@ static std::string MakePortableFilePath( const wchar_t* path )
                             NULL,
                             NULL ) == 0 )
   {
-    throw Error( "Failed to transcode utf-8 to utf-16" );
+    throw Error( "Failed to transcode utf-16 to utf-8" );
   }
 
   for ( char* it = output; *it; it++ )
@@ -271,6 +271,33 @@ std::vector<std::string> ReadDir( const char* path )
   }
 
   return entries;
+}
+
+std::string LocalPathToUTF8Path( const char* path )
+{
+  wchar_t utf16[1024];
+
+  if ( MultiByteToWideChar(
+    CP_ACP, MB_ERR_INVALID_CHARS, path, -1, utf16, _countof( utf16 ) ) == 0 )
+  {
+    throw Error( "Failed to transcode local path to utf-16" );
+  }
+
+  char utf8[1024];
+
+  if ( WideCharToMultiByte( CP_UTF8,
+                            WC_ERR_INVALID_CHARS,
+                            utf16,
+                            -1,
+                            utf8,
+                            sizeof( utf8 ),
+                            NULL,
+                            NULL ) == 0 )
+  {
+    throw Error( "Failed to transcode utf-16 to utf-8" );
+  }
+
+  return utf8;
 }
 
 }

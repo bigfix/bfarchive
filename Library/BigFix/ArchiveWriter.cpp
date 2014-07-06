@@ -2,6 +2,7 @@
 #include "BigFix/DataRef.h"
 #include "BigFix/DateTime.h"
 #include "BigFix/Error.h"
+#include "BigFix/Filesystem.h"
 #include "BigFix/Number.h"
 #include "BigFix/Stream.h"
 #include <string.h>
@@ -35,15 +36,6 @@ void ArchiveWriter::End()
 {
   m_output.Write( DataRef( "_\0" ) );
   m_output.End();
-}
-
-static bool IsAscii( const char* path )
-{
-  for ( const char* it = path; *it; it++ )
-    if ( static_cast<uint8_t>( *it ) >= 128 )
-      return false;
-
-  return true;
 }
 
 void ArchiveWriter::WriteHeader( const char* path,

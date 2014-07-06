@@ -53,4 +53,13 @@ FileStatus::FileStatus( uint64_t length,
 {
 }
 
+bool IsAscii( const char* path )
+{
+  for ( const char* it = path; *it; it++ )
+    if ( static_cast<uint8_t>( *it ) >= 128 )
+      return false;
+
+  return true;
+}
+
 }
