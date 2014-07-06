@@ -190,11 +190,11 @@ FileStatus Stat( const char* path )
                   static_cast<uint8_t>( systemTime.wMinute ),
                   static_cast<uint8_t>( systemTime.wSecond ) );
 
-  return FileStatus(
-    fileSize.QuadPart,
-    mtime,
-    ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) ? true : false,
-    ( findData.dwFileAttributes & FILE_ATTRIBUTE_NORMAL )  ? true : false );
+  bool isDirectory = ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
+                   ? true
+                   : false;
+
+  return FileStatus( fileSize.QuadPart, mtime, isDirectory, !isDirectory );
 }
 
 std::string JoinFilePath( const std::string& parent, const std::string& child )
@@ -227,9 +227,21 @@ void StreamStdIn( Stream& stream )
   stream.End();
 }
 
+static bool IsDots( const wchar_t* path )
+{
+  if ( wcscmp( path, L"." ) == 0 )
+    return true;
+
+  if ( wcscmp( path, L".." ) == 0 )
+    return true;
+
+  return false;
+}
+
 std::vector<std::string> ReadDir( const char* path )
 {
   std::wstring windowsPath = MakeWindowsFilePath( path );
+  windowsPath += L"\\*";
 
   std::vector<std::string> entries;
 
@@ -246,11 +258,12 @@ std::vector<std::string> ReadDir( const char* path )
 
   while ( true )
   {
-    entries.push_back( MakePortableFilePath( findData.cFileName ) );
+    if ( !IsDots( findData.cFileName ) )
+      entries.push_back( MakePortableFilePath( findData.cFileName ) );
 
     if ( !FindNextFile( findHandle, &findData ) )
     {
-      if ( GetLastError() == ERROR_FILE_NOT_FOUND )
+      if ( GetLastError() == ERROR_NO_MORE_FILES )
         break;
 
       throw Error( "Failed to read directory" );
