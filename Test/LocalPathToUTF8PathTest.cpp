@@ -9,11 +9,11 @@ TEST( LocalPathToUTF8PathTest, AsciiPath )
 }
 
 // On Windows, we transcode from the local code page to UTF-8 if the file path
-// path is not marked as UTF-8. On all other platforms, we just use the file as
+// is not marked as UTF-8. On all other platforms, we just use the file path as
 // is because there's not an awesome solution for file name encoding.
 
 // To have this test work the same in all locales, we always use code page 932,
-// which is shift-jis. The actual implementation will use CP_ACP.
+// which is shift-jis. The actual implementation uses CP_ACP.
 
 static const uint8_t konnichiwa_shiftjis[] =
 {
