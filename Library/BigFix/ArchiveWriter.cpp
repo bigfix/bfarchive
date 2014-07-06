@@ -6,6 +6,7 @@
 #include "BigFix/Number.h"
 #include "BigFix/Stream.h"
 #include <limits>
+#include <string.h>
 
 namespace BigFix
 {
