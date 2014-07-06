@@ -275,6 +275,9 @@ std::vector<std::string> ReadDir( const char* path )
 
 std::string LocalPathToUTF8Path( const char* path )
 {
+  if ( IsAscii( path ) )
+    return path;
+
   wchar_t utf16[1024];
 
   if ( MultiByteToWideChar(

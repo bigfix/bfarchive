@@ -2,6 +2,7 @@
 #include "BigFix/DataRef.h"
 #include "BigFix/DateTime.h"
 #include "BigFix/Error.h"
+#include "BigFix/Filesystem.h"
 #include "BigFix/Number.h"
 #include <algorithm>
 #include <string.h>
@@ -204,19 +205,23 @@ const uint8_t* ArchiveReader::FileLength( const uint8_t* start,
   {
     m_fileLength = ReadLittleEndian( DataRef( m_buffer, m_buffer + m_length ) );
 
+    std::string utf8Path =
+      m_pathIsUTF8
+        ? reinterpret_cast<const char*>( m_path )
+        : LocalPathToUTF8Path( reinterpret_cast<const char*>( m_path ) );
+
     if ( m_isDirectory )
     {
       if ( m_fileLength )
         throw Error( "A directory has a non-zero file length." );
 
-      m_output.Directory( reinterpret_cast<const char*>( m_path ), m_mtime );
+      m_output.Directory( utf8Path.c_str(), m_mtime );
 
       m_state = STATE_PATH_ENCODING;
     }
     else
     {
-      m_fileStream = &m_output.File(
-        reinterpret_cast<const char*>( m_path ), m_mtime, m_fileLength );
+      m_fileStream = &m_output.File( utf8Path.c_str(), m_mtime, m_fileLength );
 
       m_filePos = 0;
       m_state = STATE_FILE;
