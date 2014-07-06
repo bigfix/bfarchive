@@ -138,7 +138,7 @@ static std::auto_ptr<File> NewFile( const char* path,
 
 std::auto_ptr<File> OpenNewFile( const char* path )
 {
-  return NewFile( path, GENERIC_WRITE, CREATE_ALWAYS );
+  return NewFile( path, GENERIC_WRITE, CREATE_NEW );
 }
 
 std::auto_ptr<File> OpenExistingFile( const char* path )
