@@ -1,5 +1,6 @@
 #include "ArchiveCreator.h"
 #include "BigFix/DateTime.h"
+#include "BigFix/Error.h"
 #include "BigFix/Filesystem.h"
 #include <iostream>
 
@@ -13,7 +14,21 @@ ArchiveCreator::ArchiveCreator( Stream& output, bool verbose )
 
 void ArchiveCreator::Create( const std::string& path )
 {
-  RecursivelyAddDir( path, "" );
+  FileStatus status = Stat( path.c_str() );
+
+  if ( status.IsDirectory() )
+  {
+    RecursivelyAddDir( path, "" );
+  }
+  else if ( status.IsFile() )
+  {
+    AddFile( status, path, path );
+  }
+  else
+  {
+    throw Error( "Archives can only be created from directories or files" );
+  }
+
   m_writer.End();
 }
 
@@ -35,7 +50,7 @@ void ArchiveCreator::RecursivelyAddDir( const std::string& filePath,
     if ( status.IsDirectory() )
     {
       if ( m_verbose )
-        std::cout << relativeArchivePath << std::endl;
+        std::cout << relativeArchivePath << "/" << std::endl;
 
       m_writer.Directory( relativeArchivePath.c_str(),
                           status.ModificationTime() );
@@ -44,14 +59,21 @@ void ArchiveCreator::RecursivelyAddDir( const std::string& filePath,
     }
     else if ( status.IsFile() )
     {
-      if ( m_verbose )
-        std::cout << relativeArchivePath << std::endl;
-
-      Stream& contentStream = m_writer.File( relativeArchivePath.c_str(),
-                                             status.ModificationTime(),
-                                             status.Length() );
-
-      StreamFile( relativeFilePath.c_str(), contentStream );
+      AddFile( status, relativeFilePath, relativeArchivePath );
     }
   }
+}
+
+void ArchiveCreator::AddFile( const FileStatus& status,
+                              const std::string& filePath,
+                              const std::string& archivePath )
+{
+  if ( m_verbose )
+    std::cout << archivePath << std::endl;
+
+  Stream& contentStream = m_writer.File( archivePath.c_str(),
+                                         status.ModificationTime(),
+                                         status.Length() );
+
+  StreamFile( filePath.c_str(), contentStream );
 }
