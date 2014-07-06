@@ -41,6 +41,45 @@ it.
 
     $ bfarchive -xv some_archive /some/folder
 
+File Format
+===
+
+The BigFix archive format serializes the contents of a directory into one
+compressed file.
+
+Compression Format
+---
+
+First there is a `8 byte` header that is always `##SC001` (including the null
+terminator). In hex this is:
+
+    0x23, 0x23, 0x53, 0x43, 0x30, 0x30, 0x31, 0x00
+    
+Next there is a `4 byte` file checksum. This can sometimes be all zero.
+
+Finally, the remainder of the file is compressed using the zlib `deflate`
+function. It can be decompressed using the zlib `inflate` function.
+
+Archive Format
+---
+
+The archive is a list of file and directory entries.
+
+* `1 byte` or `2 bytes`: Entry header. The possible values are:
+  * `"21"` the path is UTF-8 and the file length is 8 bytes long
+  * `"2_"` the path is UTF-8 and the file length is 4 bytes long
+  * `"1"` the path is in the local encoding and the file length is 8 bytes long
+  * `"_"` the path is in the local encoding and the file length is 4 bytes long
+* `1 byte`: Path length. A length of `0` terminates the archive. This length
+  includes the null terminator.
+* `<path length> bytes`: File or directory path. If this ends with a `'/'`, then
+  it's a directory.
+* `1 byte`: Date length.
+* `<date length> bytes`: The modification date.
+* `4 bytes` or `8 bytes`: The file length. The length of this field depends on
+  the entry header.
+* `<file length> bytes`: The file contents.
+
 Building
 ===
 
@@ -61,8 +100,9 @@ in a separate directory to avoid polluting the source directory.
     $ mkdir build
     $ cd build
     $ cmake /path/to/bfarchive
-    
-You can then open the generated `BFArchive.sln` in Visual Studio to build.
+
+You can then open the generated `BFArchive.sln` solution file in Visual Studio
+to build.
 
 Support
 ===
