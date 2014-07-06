@@ -64,7 +64,8 @@ function. It can be decompressed using the zlib `inflate` function.
 Archive Format
 ---
 
-The archive is a list of file and directory entries.
+The archive is a list of file and directory entries. Each entry is encoded in
+the following format:
 
 * `1 byte` or `2 bytes`: Entry header. The possible values are:
   * `"21"` the path is UTF-8 and the file length is 8 bytes long
