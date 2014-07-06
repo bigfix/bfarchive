@@ -62,4 +62,12 @@ bool IsAscii( const char* path )
   return true;
 }
 
+std::string JoinPath( const std::string& parent, const std::string& child )
+{
+  if ( parent.empty() || parent == "." )
+    return child;
+
+  return parent + "/" + child;
+}
+
 }

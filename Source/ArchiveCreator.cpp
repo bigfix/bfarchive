@@ -17,15 +17,6 @@ void ArchiveCreator::Create( const std::string& path )
   m_writer.End();
 }
 
-static std::string JoinArchivePath( const std::string& parent,
-                                    const std::string& child )
-{
-  if ( parent.empty() || parent == "." )
-    return child;
-
-  return parent + "/" + child;
-}
-
 void ArchiveCreator::RecursivelyAddDir( const std::string& filePath,
                                         const std::string& archivePath )
 {
@@ -36,8 +27,8 @@ void ArchiveCreator::RecursivelyAddDir( const std::string& filePath,
         it != end;
         it++ )
   {
-    std::string relativeFilePath = JoinFilePath( filePath, *it );
-    std::string relativeArchivePath = JoinArchivePath( archivePath, *it );
+    std::string relativeFilePath = JoinPath( filePath, *it );
+    std::string relativeArchivePath = JoinPath( archivePath, *it );
 
     FileStatus status = Stat( relativeFilePath.c_str() );
 

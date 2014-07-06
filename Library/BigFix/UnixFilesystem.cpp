@@ -132,14 +132,6 @@ FileStatus Stat( const char* path )
     stats.st_size, mtime, S_ISDIR( stats.st_mode ), S_ISREG( stats.st_mode ) );
 }
 
-std::string JoinFilePath( const std::string& parent, const std::string& child )
-{
-  if ( parent.empty() || parent == "." )
-    return child;
-
-  return parent + "/" + child;
-}
-
 void StreamStdIn( Stream& stream )
 {
   uint8_t buffer[4096];

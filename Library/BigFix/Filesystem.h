@@ -64,7 +64,7 @@ void MakeDir( const char* path );
 
 FileStatus Stat( const char* path );
 
-std::string JoinFilePath( const std::string& parent, const std::string& child );
+std::string JoinPath( const std::string& parent, const std::string& child );
 
 void StreamStdIn( Stream& );
 void StreamFile( const char* path, Stream& );

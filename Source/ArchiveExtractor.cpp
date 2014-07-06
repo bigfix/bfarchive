@@ -29,7 +29,7 @@ void ArchiveExtractor::Directory( const char* path,
   if ( m_verbose )
     std::cout << path << std::endl;
 
-  std::string fullPath = JoinFilePath( m_outputDir, path );
+  std::string fullPath = JoinPath( m_outputDir, path );
   MakeDir( fullPath.c_str() );
 }
 
@@ -40,7 +40,7 @@ BigFix::Stream& ArchiveExtractor::File( const char* path,
   if ( m_verbose )
     std::cout << path << std::endl;
 
-  std::string fullPath = JoinFilePath( m_outputDir, path );
+  std::string fullPath = JoinPath( m_outputDir, path );
   m_fileStream.Reset( OpenNewFile( fullPath.c_str() ), mtime );
   return m_fileStream;
 }

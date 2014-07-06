@@ -197,14 +197,6 @@ FileStatus Stat( const char* path )
   return FileStatus( fileSize.QuadPart, mtime, isDirectory, !isDirectory );
 }
 
-std::string JoinFilePath( const std::string& parent, const std::string& child )
-{
-  if ( parent.empty() || parent == "." )
-    return child;
-
-  return parent + "\\" + child;
-}
-
 void StreamStdIn( Stream& stream )
 {
   _setmode( 0, O_BINARY );
