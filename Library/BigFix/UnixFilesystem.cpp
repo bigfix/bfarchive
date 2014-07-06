@@ -117,7 +117,7 @@ FileStatus Stat( const char* path )
     throw Error( "Failed to stat file" );
 
   struct tm result;
-  if ( gmtime_r( &stats.st_mtimespec.tv_sec, &result ) == 0 )
+  if ( gmtime_r( &stats.st_mtime, &result ) == 0 )
     throw Error( "Failed to convert file time to DateTime" );
 
   DateTime mtime( result.tm_year + 1900,
