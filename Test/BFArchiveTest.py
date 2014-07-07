@@ -1,4 +1,4 @@
-import unittest, shutil, os, hashlib, sys
+import unittest, shutil, os, hashlib, sys, re
 from subprocess import Popen, PIPE
 
 def run(args):
@@ -55,13 +55,13 @@ class TestNoArgs(unittest.TestCase):
   def test_prints_usage_when_no_args(self):
     (exitcode, stdout, stderr) = run([])
     self.assertEqual(exitcode, 1)
-    self.assertIn('Usage', stdout)
+    self.assertTrue('Usage' in stdout)
 
 class TestHelp(unittest.TestCase):
 
   def verifyResult(self, (exitcode, stdout, stderr)):
     self.assertEqual(exitcode, 0)
-    self.assertIn('Usage', stdout)
+    self.assertTrue('Usage' in stdout)
 
   def test_short_arg(self):
     self.verifyResult(run(['-h']))
@@ -73,7 +73,7 @@ class TestVersion(unittest.TestCase):
 
   def verifyResult(self, (exitcode, stdout, stderr)):
     self.assertEqual(exitcode, 0)
-    self.assertRegexpMatches(stdout, '^[0-9]+\.[0-9]+\.[0-9]+')
+    self.assertTrue(re.search('^[0-9]+\.[0-9]+\.[0-9]+', stdout) != None)
 
   def test_short_arg(self):
     self.verifyResult(run(['-V']))
