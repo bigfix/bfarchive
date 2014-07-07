@@ -42,8 +42,11 @@ size_t WindowsFile::Read( uint8_t* buffer, size_t length )
 {
   DWORD nread;
 
-  if ( !ReadFile( m_handle, buffer, static_cast<DWORD>( length ), &nread, NULL ) )
+  if ( !ReadFile(
+         m_handle, buffer, static_cast<DWORD>( length ), &nread, NULL ) )
+  {
     throw Error( "Failed to read file" );
+  }
 
   return nread;
 }
@@ -57,8 +60,14 @@ void WindowsFile::Write( DataRef data )
   {
     DWORD nwritten;
 
-    if ( !WriteFile( m_handle, start, static_cast<DWORD>( end - start ), &nwritten, NULL ) )
+    if ( !WriteFile( m_handle,
+                     start,
+                     static_cast<DWORD>( end - start ),
+                     &nwritten,
+                     NULL ) )
+    {
       throw Error( "Failed to write file" );
+    }
 
     start += nwritten;
   }
@@ -68,8 +77,12 @@ static std::wstring MakeWindowsFilePath( const char* path )
 {
   wchar_t output[1024];
 
-  if ( MultiByteToWideChar(
-    CP_UTF8, MB_ERR_INVALID_CHARS, path, -1, output, _countof( output ) ) == 0 )
+  if ( MultiByteToWideChar( CP_UTF8,
+                            MB_ERR_INVALID_CHARS,
+                            path,
+                            -1,
+                            output,
+                            _countof( output ) ) == 0 )
   {
     throw Error( "Failed to transcode utf-8 to utf-16" );
   }
@@ -190,9 +203,8 @@ FileStatus Stat( const char* path )
                   static_cast<uint8_t>( systemTime.wMinute ),
                   static_cast<uint8_t>( systemTime.wSecond ) );
 
-  bool isDirectory = ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
-                   ? true
-                   : false;
+  bool isDirectory =
+    ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) ? true : false;
 
   return FileStatus( fileSize.QuadPart, mtime, isDirectory, !isDirectory );
 }
@@ -268,8 +280,12 @@ std::string LocalPathToUTF8Path( const char* path, int codepage )
 
   wchar_t utf16[1024];
 
-  if ( MultiByteToWideChar(
-    codepage, MB_ERR_INVALID_CHARS, path, -1, utf16, _countof( utf16 ) ) == 0 )
+  if ( MultiByteToWideChar( codepage,
+                            MB_ERR_INVALID_CHARS,
+                            path,
+                            -1,
+                            utf16,
+                            _countof( utf16 ) ) == 0 )
   {
     throw Error( "Failed to transcode local path to utf-16" );
   }
