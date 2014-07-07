@@ -124,7 +124,7 @@ static int ListArchive( const std::vector<std::string>& arguments )
   return 0;
 }
 
-int main( int argc, const char* argv[] )
+int Main( int argc, const char* argv[] )
 {
   try
   {

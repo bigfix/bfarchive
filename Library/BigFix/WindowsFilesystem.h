@@ -37,6 +37,8 @@ private:
   HANDLE m_handle;
 };
 
+std::string MakePortableFilePath( const wchar_t* path );
+
 }
 
 #endif

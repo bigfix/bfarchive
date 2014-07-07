@@ -94,7 +94,7 @@ static std::wstring MakeWindowsFilePath( const char* path )
   return output;
 }
 
-static std::string MakePortableFilePath( const wchar_t* path )
+std::string MakePortableFilePath( const wchar_t* path )
 {
   char output[1024];
 
