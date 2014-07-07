@@ -16,7 +16,6 @@ else()
   set(BFARCHIVE_PLATFORM_FILES Source/Version.rc Source/UnixMain.cpp)
 endif()
 
-
 # Statically link the CRT on Windows. There's got to be a better way to do this.
 if(MSVC)
   foreach(flag
