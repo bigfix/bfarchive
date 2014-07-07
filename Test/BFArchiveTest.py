@@ -91,7 +91,7 @@ class TestCreateDirectoryArchive(unittest.TestCase):
   def verifyVerbose(self, (exitcode, stdout, stderr)):
     self.assertEqual(exitcode, 0)
     self.assertEqual(stderr, "")
-    self.assertEqual(stdout.splitlines(), westeros_contents())
+    self.assertEqual(sorted(stdout.splitlines()), sorted(westeros_contents()))
 
   def test_short_silent(self):
     self.verifySilent(run(['-a', 'Westeros', 'WesterosShort']))
@@ -131,7 +131,7 @@ class TestListArchive(unittest.TestCase):
   def verifyResult(self, (exitcode, stdout, stderr)):
     self.assertEqual(exitcode, 0)
     self.assertEqual(stderr, "")
-    self.assertEqual(stdout.splitlines(), westeros_contents())
+    self.assertEqual(sorted(stdout.splitlines()), sorted(westeros_contents()))
 
   def test_short_arg_with_file(self):
     self.verifyResult(run(['-l', 'WesterosShort']))
@@ -173,7 +173,7 @@ class TestExtractDirectoryArchive(unittest.TestCase):
   def verifyVerbose(self, (exitcode, stdout, stderr)):
     self.assertEqual(exitcode, 0)
     self.assertEqual(stderr, "")
-    self.assertEqual(stdout.splitlines(), westeros_contents())
+    self.assertEqual(sorted(stdout.splitlines()), sorted(westeros_contents()))
 
   def test_extract_short_arg_with_file(self):
     self.verifySilent(run(['-x', 'WesterosShort', 'WesterosShortOut']))
