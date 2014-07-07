@@ -13,7 +13,7 @@ endif()
 if(WIN32)
   set(BFARCHIVE_PLATFORM_FILES Source/Version.rc Source/WindowsMain.cpp)
 else()
-  set(BFARCHIVE_PLATFORM_FILES Source/Version.rc Source/UnixMain.cpp)
+  set(BFARCHIVE_PLATFORM_FILES Source/UnixMain.cpp)
 endif()
 
 # Statically link the CRT on Windows. There's got to be a better way to do this.
