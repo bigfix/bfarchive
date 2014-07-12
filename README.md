@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/bigfix/bfarchive.svg?branch=master)](https://travis-ci.org/bigfix/bfarchive)
+
 Usage
 ===
 
