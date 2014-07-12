@@ -1,4 +1,5 @@
 #include "BigFix/ArchiveWriter.cpp"
+#include "BigFix/Error.h"
 #include "TestUtility.h"
 #include <gtest/gtest.h>
 
@@ -122,4 +123,16 @@ TEST( ArchiveWriterTest, UTF8File )
   ASSERT_EQ( sizeof( expected ), output.size() );
   ASSERT_TRUE( std::equal( output.begin(), output.end(), expected ) );
   EXPECT_TRUE( vectorStream.ended );
+}
+
+TEST( ArchiveWriterTest, ThrowsOnPathTooLong )
+{
+  NullStream nullStream;
+  ArchiveWriter writer( nullStream );
+
+  std::string length254( 254, 'x' );
+  std::string length255( 255, 'x' );
+
+  WriteAndEnd( writer.File( length254.c_str(), DateTime(), 0 ), DataRef() );
+  EXPECT_THROW( writer.File( length255.c_str(), DateTime(), 0 ), Error );
 }

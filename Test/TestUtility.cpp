@@ -36,7 +36,10 @@ void StringStream::End()
 void WriteOneByOneAndEnd( Stream& stream, DataRef data )
 {
   for ( const uint8_t* it = data.Start(); it != data.End(); it++ )
+  {
     stream.Write( DataRef( it, it + 1 ) );
+    stream.Write( DataRef() );
+  }
 
   stream.End();
 }

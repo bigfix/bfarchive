@@ -1,4 +1,5 @@
 #include "BigFix/DataRef.h"
+#include "BigFix/Error.h"
 #include "BigFix/InflateStream.h"
 #include "TestUtility.h"
 #include <gtest/gtest.h>
@@ -68,4 +69,48 @@ TEST( InflateStreamTest, DecompressEmpty )
 
   EXPECT_EQ( "", output );
   EXPECT_TRUE( stringStream.ended );
+}
+
+TEST( InflateStreamTest, ThrowsIfEndedInChecksum )
+{
+  NullStream nullStream;
+  InflateStream inflateStream( nullStream );
+
+  uint8_t data[] =
+  {
+    0x23, 0x23, 0x53, 0x43, 0x30, 0x30, 0x31, 0x00, 0x00, 0x00, 0x00
+  };
+
+  inflateStream.Write( DataRef( data, data + sizeof( data ) ) );
+  EXPECT_THROW( inflateStream.End(), Error );
+}
+
+TEST( InflateStreamTest, ThrowsIfCompressedDataIsIncomplete )
+{
+  NullStream nullStream;
+  InflateStream inflateStream( nullStream );
+
+  uint8_t data[] =
+  {
+    0x23, 0x23, 0x53, 0x43, 0x30, 0x30, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x78, 0x9c, 0x03, 0x00, 0x00, 0x00, 0x00
+  };
+
+  inflateStream.Write( DataRef( data, data + sizeof( data ) ) );
+  EXPECT_THROW( inflateStream.End(), Error );
+}
+
+TEST( InflateStreamTest, ThrowsIfCompressedDataIsInvalid )
+{
+  NullStream nullStream;
+  InflateStream inflateStream( nullStream );
+
+  uint8_t data[] =
+  {
+    0x23, 0x23, 0x53, 0x43, 0x30, 0x30, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00,
+    'h', 'o', 'd', 'o', 'r'
+  };
+
+  EXPECT_THROW( inflateStream.Write( DataRef( data, data + sizeof( data ) ) ),
+                Error );
 }

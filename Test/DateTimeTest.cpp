@@ -42,3 +42,12 @@ TEST( DateTimeTest, FromConstructor )
     "Sun, 11 Mar 1984 08:23:42 +0000",
     DateTime( 1984, 3, 11, 1, 8, 23, 42 ).ToString() );
 }
+
+TEST( DateTimeTest, ThrowsOnInvalidDates )
+{
+  EXPECT_THROW( DateTime( DataRef( "hodor" ) ), Error );
+  EXPECT_THROW( DateTime( DataRef( "Xxx, 11 Mar 1984 08:23:42 +0000" ) ),
+                Error );
+  EXPECT_THROW( DateTime( DataRef( "Sun, 11 Xxx 1984 08:23:42 +0000" ) ),
+                Error );
+}

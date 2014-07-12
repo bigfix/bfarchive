@@ -149,7 +149,7 @@ class TestListArchive(unittest.TestCase):
 
 class TestExtractDirectoryArchive(unittest.TestCase):
 
-  def verify_directory_archive(self, dir):
+  def verifyDirectoryArchive(self, dir):
     davos = read_file(os.path.join(dir, 'davos.txt'))
     jaime = read_file(os.path.join(dir, 'Lannisport', 'jaime.txt'))
     tyrion = read_file(os.path.join(dir, 'Lannisport', 'tyrion.txt'))
@@ -177,25 +177,52 @@ class TestExtractDirectoryArchive(unittest.TestCase):
 
   def test_extract_short_arg_with_file(self):
     self.verifySilent(run(['-x', 'WesterosShort', 'WesterosShortOut']))
-    self.verify_directory_archive('WesterosShortOut')
+    self.verifyDirectoryArchive('WesterosShortOut')
 
   def test_extract_long_arg_with_file(self):
     self.verifySilent(run(['--extract', 'WesterosShort', 'WesterosLongOut']))
-    self.verify_directory_archive('WesterosLongOut')
+    self.verifyDirectoryArchive('WesterosLongOut')
 
   def test_extract_verbose(self):
     self.verifyVerbose(run(['-xv', 'WesterosShort', 'WesterosVerboseOut']))
-    self.verify_directory_archive('WesterosVerboseOut')
+    self.verifyDirectoryArchive('WesterosVerboseOut')
 
   def test_extract_stdin(self):
     contents = read_file('WesterosShort')
     self.verifySilent(run_stdin(['-x', '-', 'WesterosStdinOut'], contents))
-    self.verify_directory_archive('WesterosStdinOut')
+    self.verifyDirectoryArchive('WesterosStdinOut')
 
   def test_z_extract_current_dir(self):
     self.verifySilent(run(['-x', 'WesterosShort']))
-    self.verify_directory_archive('.')    
+    self.verifyDirectoryArchive('.')
 
+class TestBadArgumentCount(unittest.TestCase):
+
+  def verifyFailed(self, (exitcode, stdout, stderr)):
+    self.assertEqual(exitcode, 1)
+
+  def test_create_needs_two_args(self):
+    self.verifyFailed(run(['-a']));
+    self.verifyFailed(run(['-a', 'one']));
+    self.verifyFailed(run(['-a', 'one', 'two', 'three']));
+
+  def test_extract_needs_one_or_two_arg(self):
+    self.verifyFailed(run(['-x']));
+    self.verifyFailed(run(['-x', 'one', 'two', 'three']));
+
+  def test_list_needs_one_arg(self):
+    self.verifyFailed(run(['-l']));
+    self.verifyFailed(run(['-l', 'one', 'two']));
+
+class TestExtractBadArchive(unittest.TestCase):
+
+  def verifyFailed(self, (exitcode, stdout, stderr)):
+    self.assertEqual(exitcode, 1)
+    self.assertTrue('Error' in stderr)
+
+  def test_extract_missing_file(self):
+    self.verifyFailed(run(['-x', 'missing']));
+    
 binary = sys.argv.pop()
 reset_sandbox()
 unittest.main()

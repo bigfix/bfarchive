@@ -158,3 +158,15 @@ TEST( FilesystemTest, StreamFile )
   EXPECT_EQ( "hello", output );
   EXPECT_TRUE( stringStream.ended );
 }
+
+TEST( FilesystemTest, ThrowsIfStatNonexistentFile )
+{
+  std::string fileName = Sandbox( "MissingFile" );
+  EXPECT_THROW( Stat( fileName.c_str() ), Error );
+}
+
+TEST( FilesystemTest, ThrowsIfReadNonexistentDirectory )
+{
+  std::string fileName = Sandbox( "MissingDirectory" );
+  EXPECT_THROW( ReadDir( fileName.c_str() ), Error );
+}
