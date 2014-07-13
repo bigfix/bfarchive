@@ -5,3 +5,5 @@ install:
   - sudo cp -r cmake/* /usr
   - cmake --version
 script: cmake . && make && make test
+notifications:
+  email: false
