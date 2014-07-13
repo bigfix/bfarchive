@@ -3,11 +3,20 @@ cmake_minimum_required(VERSION 2.8)
 project(BFArchive C CXX)
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-  set(BIGFIX_COMPILE_OPTIONS -Wall -Werror -O3 -fcolor-diagnostics)
+  set(BIGFIX_COMPILE_OPTIONS -Wall -Werror -fcolor-diagnostics)
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-  set(BIGFIX_COMPILE_OPTIONS -Wall -Werror -O3)
+  set(BIGFIX_COMPILE_OPTIONS -Wall -Werror)
 else()
   set(BIGFIX_COMPILE_OPTIONS /W3 /WX /DUNICODE /D_UNICODE)
+endif()
+
+if(NOT WIN32)
+  if(${COVERAGE})
+    list(APPEND BIGFIX_COMPILE_OPTIONS -coverage)
+    list(APPEND BIGFIX_LINK_OPTIONS -coverage)
+  else()
+    list(APPEND BIGFIX_COMPILE_OPTIONS -O3)
+  endif()
 endif()
 
 if(WIN32)
@@ -42,7 +51,7 @@ add_executable(bfarchive
 )
 
 target_compile_options(bfarchive PRIVATE ${BIGFIX_COMPILE_OPTIONS})
-target_link_libraries(bfarchive bigfix)
+target_link_libraries(bfarchive bigfix ${BIGFIX_LINK_OPTIONS})
 
 if(WIN32)
   set_target_properties(bfarchive PROPERTIES OUTPUT_NAME BFArchive)

@@ -4,6 +4,9 @@ install:
   - tar -xf cmake-2.8.12.tgz
   - sudo cp -r cmake/* /usr
   - cmake --version
-script: cmake . && make && make test
+  - sudo pip install cpp-coveralls
+script: cmake -DCOVERAGE=true . && make && make test
+after_success:
+  - coveralls
 notifications:
   email: false
