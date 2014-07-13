@@ -45,9 +45,8 @@ TEST( FilesystemTest, MakeDir )
 
 TEST( FilesystemTest, OpenExistingFailsIfDoesntExist )
 {
-  EXPECT_THROW(
-    OpenExistingFile( Sandbox( "OpenExistingFailsIfDoesntExist" ).c_str() ),
-    Error );
+  std::string name = Sandbox( "OpenExistingFailsIfDoesntExist" );
+  EXPECT_THROW( OpenExistingFile( name.c_str() ), Error );
 }
 
 TEST( FilesystemTest, OpenNewFailsIfExists )
