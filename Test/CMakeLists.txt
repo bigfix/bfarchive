@@ -2,14 +2,15 @@ add_executable(run_unit EXCLUDE_FROM_ALL
   ArchiveReaderTest.cpp
   ArchiveWriterTest.cpp
   ArgParserTest.cpp
-  DateTimeTest.cpp
   DataRefTest.cpp
+  DateTimeTest.cpp
   DeflateStreamTest.cpp
   ErrorTest.cpp
   FilesystemTest.cpp
-  LocalPathToUTF8PathTest.cpp
   InflateStreamTest.cpp
+  LocalPathToUTF8PathTest.cpp
   NumberTest.cpp
+  StreamTest.cpp
   TestUtility.cpp
 )
 

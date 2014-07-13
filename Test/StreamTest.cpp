@@ -1,6 +1,9 @@
+#include "BigFix/DataRef.h"
 #include "BigFix/Stream.h"
-#include "TestUtilitiy.h"
+#include "TestUtility.h"
 #include <gtest/gtest.h>
+
+using namespace BigFix;
 
 TEST( StreamTest, AppendStreamTest )
 {
