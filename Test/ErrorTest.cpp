@@ -13,8 +13,4 @@ TEST( ErrorTest, ErrorIsAStdException )
   {
     EXPECT_EQ( std::string( "Oh noes!" ), e.what() );
   }
-  catch ( ... )
-  {
-    FAIL();
-  }
 }
