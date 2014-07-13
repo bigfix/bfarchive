@@ -12,8 +12,7 @@ endif()
 
 if(NOT WIN32)
   if(${COVERAGE})
-    list(APPEND BIGFIX_COMPILE_OPTIONS -coverage)
-    list(APPEND BIGFIX_LINK_OPTIONS -coverage)
+    set(BIGFIX_COVERAGE -coverage)
   else()
     list(APPEND BIGFIX_COMPILE_OPTIONS -O3)
   endif()
@@ -50,8 +49,10 @@ add_executable(bfarchive
   ${BFARCHIVE_PLATFORM_FILES}
 )
 
-target_compile_options(bfarchive PRIVATE ${BIGFIX_COMPILE_OPTIONS})
-target_link_libraries(bfarchive bigfix ${BIGFIX_LINK_OPTIONS})
+target_compile_options(bfarchive
+  PRIVATE ${BIGFIX_COMPILE_OPTIONS} ${BIGFIX_COVERAGE})
+
+target_link_libraries(bfarchive bigfix ${BIGFIX_COVERAGE})
 
 if(WIN32)
   set_target_properties(bfarchive PROPERTIES OUTPUT_NAME BFArchive)

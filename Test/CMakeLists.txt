@@ -14,7 +14,7 @@ add_executable(run_unit EXCLUDE_FROM_ALL
 )
 
 target_compile_options(run_unit PRIVATE ${BIGFIX_COMPILE_OPTIONS})
-target_link_libraries(run_unit bigfix gtest ${BIGFIX_LINK_OPTIONS})
+target_link_libraries(run_unit bigfix gtest ${BIGFIX_COVERAGE})
 
 add_custom_target(unit
   DEPENDS run_unit
