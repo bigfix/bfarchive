@@ -45,9 +45,11 @@ TEST( DateTimeTest, FromConstructor )
 
 TEST( DateTimeTest, ThrowsOnInvalidDates )
 {
-  EXPECT_THROW( DateTime( DataRef( "hodor" ) ), Error );
-  EXPECT_THROW( DateTime( DataRef( "Xxx, 11 Mar 1984 08:23:42 +0000" ) ),
-                Error );
-  EXPECT_THROW( DateTime( DataRef( "Sun, 11 Xxx 1984 08:23:42 +0000" ) ),
-                Error );
+  DataRef badLength( "hodor" );
+  DataRef badDay( "Xxx, 11 Mar 1984 08:23:42 +0000" );
+  DataRef badMonth( "Sun, 11 Xxx 1984 08:23:42 +0000" );
+
+  EXPECT_THROW( DateTime date( badLength ), Error );
+  EXPECT_THROW( DateTime date( badDay ), Error );
+  EXPECT_THROW( DateTime date( badMonth ), Error );
 }
