@@ -7,6 +7,6 @@ install:
   - sudo pip install cpp-coveralls
 script: cmake -DCOVERAGE=true . && make && make test
 after_success:
-  - coveralls
+  - coveralls --exclude cmake --exclude CMakeFiles --exclude External --exclude Test
 notifications:
   email: false
