@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/bigfix/bfarchive.svg?branch=master)](https://travis-ci.org/bigfix/bfarchive)
+[![Build Status](https://travis-ci.org/bigfix/bfarchive.svg?branch=master)](https://travis-ci.org/bigfix/bfarchive) [![Coverage Status](https://coveralls.io/repos/bigfix/bfarchive/badge.png?branch=master)](https://coveralls.io/r/bigfix/bfarchive?branch=master)
 
 Usage
 ===
