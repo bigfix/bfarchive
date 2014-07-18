@@ -12,6 +12,7 @@ add_executable(run_unit EXCLUDE_FROM_ALL
   NumberTest.cpp
   StreamTest.cpp
   TestUtility.cpp
+  UTF8Test.cpp
 )
 
 target_compile_options(run_unit PRIVATE ${BIGFIX_COMPILE_OPTIONS})

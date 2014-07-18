@@ -136,3 +136,19 @@ TEST( ArchiveWriterTest, ThrowsOnPathTooLong )
   WriteAndEnd( writer.File( length254.c_str(), DateTime(), 0 ), DataRef() );
   EXPECT_THROW( writer.File( length255.c_str(), DateTime(), 0 ), Error );
 }
+
+TEST( ArchiveWriterTest, ThrowsOnInvalidUTF8 )
+{
+  NullStream nullStream;
+  ArchiveWriter writer( nullStream );
+
+  static const uint8_t konnichiwa_shiftjis[] =
+  {
+    0x82, 0xB1, 0x82, 0xF1, 0x82, 0xC9, 0x82, 0xBF, 0x82, 0xCD, 0x00
+  };
+
+  EXPECT_THROW(
+    writer.File(
+      reinterpret_cast<const char*>( konnichiwa_shiftjis ), DateTime(), 0 ),
+    Error );
+}
