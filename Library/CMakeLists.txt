@@ -11,6 +11,7 @@ list(APPEND SOURCES
   BigFix/InflateStream.cpp
   BigFix/Number.cpp
   BigFix/Stream.cpp
+  BigFix/UTF8.cpp
 )
 
 if(WIN32)

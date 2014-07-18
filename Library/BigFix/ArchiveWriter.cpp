@@ -5,6 +5,7 @@
 #include "BigFix/Filesystem.h"
 #include "BigFix/Number.h"
 #include "BigFix/Stream.h"
+#include "BigFix/UTF8.h"
 #include <limits>
 #include <string.h>
 
@@ -47,6 +48,9 @@ void ArchiveWriter::WriteHeader( const char* path,
 
   if ( !IsAscii( path ) )
      m_output.Write( DataRef( "2" ) );
+
+   if ( !IsValidUTF8( path ) )
+     throw Error( "File or directory names must either be Ascii or UTF-8" );
 
   if ( length > std::numeric_limits<uint32_t>::max() )
     m_output.Write( DataRef( "1" ) );
