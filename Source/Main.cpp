@@ -84,7 +84,7 @@ static int CreateArchive( const std::vector<std::string>& arguments,
   }
 
   FileStream fileStream;
-  fileStream.Reset( OpenNewFile( arguments[1].c_str() ) );
+  fileStream.Reset( OpenAsNewFile( arguments[1].c_str() ) );
 
   DeflateStream deflateStream( fileStream );
 

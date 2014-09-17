@@ -87,7 +87,7 @@ void UnixFile::Write( DataRef data )
   }
 }
 
-static std::auto_ptr<File> NewFile( const char* path, int fd )
+static std::auto_ptr<File> OpenFile( const char* path, int fd )
 {
   if ( fd < 0 )
     throw Error( "Failed to open or create file" );
@@ -107,18 +107,18 @@ static std::auto_ptr<File> NewFile( const char* path, int fd )
   return file;
 }
 
-std::auto_ptr<File> OpenNewFile( const char* path )
+std::auto_ptr<File> OpenAsNewFile( const char* path )
 {
-  return NewFile(
+  return OpenFile(
     path,
     open( path,
-          O_WRONLY | O_CREAT | O_EXCL,
+          O_RDWR | O_CREAT | O_TRUNC,
           S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH ) );
 }
 
 std::auto_ptr<File> OpenExistingFile( const char* path )
 {
-  return NewFile( path, open( path, O_RDONLY ) );
+  return OpenFile( path, open( path, O_RDONLY ) );
 }
 
 void MakeDir( const char* path )

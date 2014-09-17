@@ -65,11 +65,19 @@ TEST( FilesystemTest, OpenExistingFailsIfDoesntExist )
   EXPECT_THROW( OpenExistingFile( name.c_str() ), Error );
 }
 
-TEST( FilesystemTest, OpenNewFailsIfExists )
+TEST( FilesystemTest, OpenAsNewTruncatesIfExists )
 {
-  std::string name = Sandbox( "OpenNewFailsIfExists" );
-  OpenNewFile( name.c_str() );
-  EXPECT_THROW( OpenNewFile( name.c_str() ), Error );
+  std::string name = Sandbox( "OpenAsNewTruncatesIfExists" );
+
+  OpenAsNewFile( name.c_str() )->Write( DataRef( "Hello" ) );
+  EXPECT_EQ( 5ul, Stat( name.c_str() ).Length() );
+
+  uint8_t buffer[32];
+  size_t nread =
+    OpenAsNewFile( name.c_str() )->Read( buffer, sizeof( buffer ) );
+
+  EXPECT_EQ( 0ul, nread );
+  EXPECT_EQ( 0ul, Stat( name.c_str() ).Length() );
 }
 
 TEST( FilesystemTest, FileReadAndWrite )
@@ -78,7 +86,7 @@ TEST( FilesystemTest, FileReadAndWrite )
   DataRef hello( "hello" );
 
   {
-    std::auto_ptr<File> file = OpenNewFile( name.c_str() );
+    std::auto_ptr<File> file = OpenAsNewFile( name.c_str() );
     file->Write( hello );
   }
 
@@ -97,7 +105,7 @@ TEST( FilesystemTest, SetAndGetModificationTime )
   std::string fileName = Sandbox( "SetAndGetModificationTime" );
   DateTime mtime( DataRef( "Sun, 11 Mar 1984 08:23:42 +0000" ) );
 
-  OpenNewFile( fileName.c_str() )->SetModificationTime( mtime );
+  OpenAsNewFile( fileName.c_str() )->SetModificationTime( mtime );
 
   FileStatus status = Stat( fileName.c_str() );
   EXPECT_EQ( mtime.ToString(), status.ModificationTime().ToString() );
@@ -106,7 +114,7 @@ TEST( FilesystemTest, SetAndGetModificationTime )
 TEST( FilesystemTest, Stat )
 {
   MakeDir( Sandbox( "StatDir" ).c_str() );
-  OpenNewFile( Sandbox( "StatFile" ).c_str() )->Write( DataRef( "hello" ) );
+  OpenAsNewFile( Sandbox( "StatFile" ).c_str() )->Write( DataRef( "hello" ) );
 
   FileStatus dirStatus = Stat( Sandbox( "StatDir" ).c_str() );
   EXPECT_TRUE( dirStatus.IsDirectory() );
@@ -123,9 +131,9 @@ TEST( FilesystemTest, ReadDir )
   std::string dirName = Sandbox( "ReadDir" );
   MakeDir( dirName.c_str() );
 
-  OpenNewFile( JoinPath( dirName, "a" ).c_str() );
+  OpenAsNewFile( JoinPath( dirName, "a" ).c_str() );
   MakeDir( JoinPath( dirName, "b" ).c_str() );
-  OpenNewFile( JoinPath( dirName, "c" ).c_str() );
+  OpenAsNewFile( JoinPath( dirName, "c" ).c_str() );
 
   std::vector<std::string> expected;
   expected.push_back( "a" );
@@ -144,7 +152,7 @@ TEST( FilesystemTest, FileStream )
   DataRef hello( "hello" );
 
   FileStream fileStream;
-  fileStream.Reset( OpenNewFile( fileName.c_str() ) );
+  fileStream.Reset( OpenAsNewFile( fileName.c_str() ) );
 
   fileStream.Write( hello );
   fileStream.End();
@@ -164,7 +172,7 @@ TEST( FilesystemTest, StreamFile )
   std::string fileName = Sandbox( "StreamFile" );
   DataRef hello( "hello" );
 
-  OpenNewFile( fileName.c_str() )->Write( hello );
+  OpenAsNewFile( fileName.c_str() )->Write( hello );
 
   std::string output;
   StringStream stringStream( output );

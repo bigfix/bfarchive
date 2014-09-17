@@ -57,7 +57,7 @@ BigFix::Stream& ArchiveExtractor::File( const char* path,
     std::cout << path << std::endl;
 
   std::string fullPath = JoinPath( m_outputDir, path );
-  m_fileStream.Reset( OpenNewFile( fullPath.c_str() ), mtime );
+  m_fileStream.Reset( OpenAsNewFile( fullPath.c_str() ), mtime );
   return m_fileStream;
 }
 

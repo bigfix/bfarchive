@@ -133,9 +133,9 @@ std::string MakePortableFilePath( const wchar_t* path )
   return output; 
 }
 
-static std::auto_ptr<File> NewFile( const char* path,
-                                    DWORD desiredAccess,
-                                    DWORD creationDisposition )
+static std::auto_ptr<File> OpenFile( const char* path,
+                                     DWORD desiredAccess,
+                                     DWORD creationDisposition )
 {
   std::wstring windowsPath = MakeWindowsFilePath( path );
 
@@ -165,14 +165,14 @@ static std::auto_ptr<File> NewFile( const char* path,
   return file;
 }
 
-std::auto_ptr<File> OpenNewFile( const char* path )
+std::auto_ptr<File> OpenAsNewFile( const char* path )
 {
-  return NewFile( path, GENERIC_WRITE, CREATE_NEW );
+  return OpenFile( path, GENERIC_READ | GENERIC_WRITE, CREATE_ALWAYS );
 }
 
 std::auto_ptr<File> OpenExistingFile( const char* path )
 {
-  return NewFile( path, GENERIC_READ, OPEN_EXISTING );
+  return OpenFile( path, GENERIC_READ, OPEN_EXISTING );
 }
 
 void MakeDir( const char* path )
