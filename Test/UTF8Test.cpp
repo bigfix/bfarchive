@@ -551,3 +551,9 @@ TEST( UTF8Test, PairedUTF16SurrogatesTest )
     BAD( bytes );
   }
 }
+
+TEST( UTF8Test, FourByteSequenceTest )
+{
+  uint8_t bytes[5] = { 0xF2, 0x90, 0x80, 0x80, 0x00 };
+  GOOD( bytes );
+}
