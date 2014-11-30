@@ -179,8 +179,13 @@ void MakeDir( const char* path )
 {
   std::wstring windowsPath = MakeWindowsFilePath( path );
 
-  if ( !CreateDirectory( windowsPath.c_str(), NULL ) )
-    throw Error( "Failed to create directory" );
+  if ( CreateDirectory( windowsPath.c_str(), NULL ) )
+    return;
+
+  if ( GetLastError() == ERROR_ALREADY_EXISTS && Stat( path ).IsDirectory() )
+    return;
+
+  throw Error( "Failed to create directory" );
 }
 
 FindHandle::FindHandle( HANDLE handle ) : m_handle( handle )

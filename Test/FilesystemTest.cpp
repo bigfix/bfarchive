@@ -56,6 +56,14 @@ TEST( FilesystemTest, MakeDir )
 {
   std::string name = Sandbox( "MakeDirTest" );
   MakeDir( name.c_str() );
+  EXPECT_TRUE( Stat( name.c_str() ).IsDirectory() );
+  EXPECT_NO_THROW( MakeDir( name.c_str() ) );
+}
+
+TEST( FilesystemTest, MakeDirCantOverwriteFiles )
+{
+  std::string name = Sandbox( "MakeDirFile" );
+  OpenAsNewFile( name.c_str() );
   EXPECT_THROW( MakeDir( name.c_str() ), Error );
 }
 

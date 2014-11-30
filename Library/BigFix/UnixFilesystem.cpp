@@ -17,6 +17,7 @@
 #include "UnixFilesystem.h"
 #include "BigFix/DataRef.h"
 #include "BigFix/Error.h"
+#include <errno.h>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -123,8 +124,13 @@ std::auto_ptr<File> OpenExistingFile( const char* path )
 
 void MakeDir( const char* path )
 {
-  if ( mkdir( path, S_IRWXU ) )
-    throw Error( "Failed to create directory" );
+  if ( mkdir( path, S_IRWXU ) == 0 )
+    return;
+
+  if ( errno == EEXIST && Stat( path ).IsDirectory() )
+    return;
+
+  throw Error( "Failed to create directory" );
 }
 
 FileStatus Stat( const char* path )
