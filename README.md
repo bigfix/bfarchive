@@ -85,28 +85,22 @@ the following format:
 Building
 ===
 
-The build requires that you have [CMake](http://cmake.org/) installed. Some of
-the tests also require [Python](https://www.python.org/).
-
-Although you can build within the source directory, your life will be easier if
-you build in a separate directory to avoid polluting the source directory.
+The build requires [CMake](http://cmake.org/), the tests require
+[Python](https://www.python.org/), and you'll need
+[7-Zip](http://www.7-zip.org/) in your `PATH` to create the `.zip` file on
+windows.
 
 ### Linux & Mac
 
-    $ mkdir build
-    $ cd build
-    $ cmake /path/to/bfarchive
-    $ make
-    $ make test
+    $ /path/to/bfarchive/build
 
-### Windows
+### Windows x86
 
-    $ mkdir build
-    $ cd build
-    $ cmake /path/to/bfarchive
+    $ /path/to/bfarchive/build x86 [zip]
 
-You can then open the generated `BFArchive.sln` solution file in Visual Studio
-to build.
+### Windows x64
+
+    $ /path/to/bfarchive/build x64 [zip]
 
 Support
 ===
