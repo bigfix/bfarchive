@@ -17,7 +17,7 @@
 #ifndef Version_h
 #define Version_h
 
-#define BFARCHIVE_COMMA_SEPARATED_VERSION 9,3,0,0
-#define BFARCHIVE_VERSION_STRING "9.3.0"
+#define BFARCHIVE_COMMA_SEPARATED_VERSION 9,3,1,0
+#define BFARCHIVE_VERSION_STRING "9.3.1"
 
 #endif
