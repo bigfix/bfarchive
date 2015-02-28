@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+SOURCE_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+if [ $(uname) == "Darwin" ]; then
+  PLATFORM=mac
+else
+  PLATFORM=linux-x64
+fi
+
+cmake $SOURCE_DIR
+make all test
+tar -cf bfarchive-$PLATFORM.tar.gz bfarchive
