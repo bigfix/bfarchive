@@ -88,7 +88,7 @@ Building
 The build requires [CMake](http://cmake.org/), the tests require
 [Python](https://www.python.org/), and you'll need
 [7-Zip](http://www.7-zip.org/) in your `PATH` to create the `.zip` file on
-windows.
+Windows.
 
 ### Linux & Mac
 
