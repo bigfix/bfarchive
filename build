@@ -12,4 +12,4 @@ fi
 
 cmake $SOURCE_DIR
 make all test
-tar -cf bfarchive-$PLATFORM.tar.gz bfarchive
+tar -czf bfarchive-$PLATFORM.tar.gz bfarchive
