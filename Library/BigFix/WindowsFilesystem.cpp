@@ -115,7 +115,7 @@ std::string MakePortableFilePath( const wchar_t* path )
   char output[1024];
 
   if ( WideCharToMultiByte( CP_UTF8,
-                            WC_ERR_INVALID_CHARS,
+                            0,
                             path,
                             -1,
                             output,
@@ -314,7 +314,7 @@ std::string LocalPathToUTF8Path( const char* path, int codepage )
   char utf8[1024];
 
   if ( WideCharToMultiByte( CP_UTF8,
-                            WC_ERR_INVALID_CHARS,
+                            0,
                             utf16,
                             -1,
                             utf8,

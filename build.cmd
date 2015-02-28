@@ -14,7 +14,7 @@ if "%1" == "x64" (
   exit /b 1
 )
 
-cmake -G "%GENERATOR%" "%SOURCE_DIR%"
+cmake -G "%GENERATOR%" -T v110_xp "%SOURCE_DIR%"
 cmake --build . --config Release --target ALL_BUILD --target test
 copy Release\BFArchive.exe .
 
