@@ -92,15 +92,15 @@ Windows.
 
 ### Linux & Mac
 
-    $ /path/to/bfarchive/build
+    $ build
 
 ### Windows x86
 
-    $ /path/to/bfarchive/build x86 [zip]
+    $ build x86 [zip]
 
 ### Windows x64
 
-    $ /path/to/bfarchive/build x64 [zip]
+    $ build x64 [zip]
 
 Support
 ===
