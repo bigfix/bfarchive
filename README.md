@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/bigfix/bfarchive.svg?branch=master)](https://travis-ci.org/bigfix/bfarchive) [![Coverage Status](https://coveralls.io/repos/bigfix/bfarchive/badge.png?branch=master)](https://coveralls.io/r/bigfix/bfarchive?branch=master)
+[![Build Status](https://travis-ci.org/bigfix/bfarchive.svg?branch=master)](https://travis-ci.org/bigfix/bfarchive) [![Coverage Status](https://coveralls.io/repos/bigfix/bfarchive/badge.svg?branch=master)](https://coveralls.io/r/bigfix/bfarchive?branch=master)
 
 Usage
 ===
@@ -85,10 +85,10 @@ the following format:
 Building
 ===
 
-The build requires [CMake](http://cmake.org/), the tests require
-[Python](https://www.python.org/), and you'll need
-[7-Zip](http://www.7-zip.org/) in your `PATH` to create the `.zip` file on
-Windows.
+The build requires [CMake](http://cmake.org/) and the tests require
+[Python](https://www.python.org/). On Windows, you'll also need Visual Studio
+2012 to compile, and you'll need [7-Zip](http://www.7-zip.org/) in your `PATH`
+to create the `.zip` file.
 
 ### Linux & Mac
 
