@@ -33,7 +33,7 @@ If the archive file argument is `-`, then BFArchive will read the archive
 contents from stdin. For example, you can list the contents of the defunct games
 site like this:
 
-    $ curl --silent http://sync.bigfix.com/bfsites/games_29/__fullsite | bfarchive --list -
+    $ curl -s http://sync.bigfix.com/bfsites/games_29/__fullsite | bfarchive -l -
     
 ### Verbose output
 
