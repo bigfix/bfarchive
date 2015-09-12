@@ -92,6 +92,8 @@ bool IsDots( const char* path );
 std::string LocalPathToUTF8Path( const char* path );
 std::string LocalPathToUTF8Path( const char* path, int codepage );
 
+std::string PathBasename( const std::string& path );
+
 }
 
 #endif

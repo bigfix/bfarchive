@@ -38,7 +38,7 @@ void ArchiveCreator::Create( const std::string& path )
   }
   else if ( status.IsFile() )
   {
-    AddFile( status, path, path );
+    AddFile( status, path, PathBasename( path ) );
   }
   else
   {

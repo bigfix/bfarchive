@@ -201,3 +201,14 @@ TEST( FilesystemTest, ThrowsIfReadNonexistentDirectory )
   std::string fileName = Sandbox( "MissingDirectory" );
   EXPECT_THROW( ReadDir( fileName.c_str() ), Error );
 }
+
+TEST( FilesystemTest, BasenameTest )
+{
+  EXPECT_EQ( PathBasename( "file.ext" ), "file.ext" );
+
+#ifdef _WIN32
+  EXPECT_EQ( PathBasename( "C:\\parent\\file.ext" ), "file.ext" );
+#else
+  EXPECT_EQ( PathBasename( "/parent/file.ext" ), "file.ext" );
+#endif
+}
