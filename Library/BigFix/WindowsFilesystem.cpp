@@ -289,16 +289,6 @@ std::vector<std::string> ReadDir( const char* path )
   return entries;
 }
 
-std::string PathBasename( const std::string& path )
-{
-  size_t pos = path.rfind( '\\' );
-
-  if ( pos == std::string::npos )
-    return path;
-
-  return path.substr( pos + 1 );
-}
-
 std::string LocalPathToUTF8Path( const char* path )
 {
   return LocalPathToUTF8Path( path, CP_ACP );

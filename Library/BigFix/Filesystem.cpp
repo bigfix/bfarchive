@@ -98,4 +98,14 @@ std::string JoinPath( const std::string& parent, const std::string& child )
   return parent + "/" + child;
 }
 
+std::string PathBasename( const std::string& path )
+{
+  size_t pos = path.rfind( '/' );
+
+  if ( pos == std::string::npos )
+    return path;
+
+  return path.substr( pos + 1 );
+}
+
 }

@@ -213,16 +213,6 @@ std::vector<std::string> ReadDir( const char* path )
   return entries;
 }
 
-std::string PathBasename( const std::string& path )
-{
-  size_t pos = path.rfind( '/' );
-
-  if ( pos == std::string::npos )
-    return path;
-
-  return path.substr( pos + 1 );
-}
-
 // This non-implementation of LocalPathToUTF8Path isn't correct, but there isn't
 // a correct thing to do in all cases.
 

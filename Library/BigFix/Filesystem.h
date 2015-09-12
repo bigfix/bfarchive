@@ -81,6 +81,7 @@ void MakeDir( const char* path );
 FileStatus Stat( const char* path );
 
 std::string JoinPath( const std::string& parent, const std::string& child );
+std::string PathBasename( const std::string& path );
 
 void StreamStdIn( Stream& );
 void StreamFile( const char* path, Stream& );
@@ -91,8 +92,6 @@ bool IsDots( const char* path );
 
 std::string LocalPathToUTF8Path( const char* path );
 std::string LocalPathToUTF8Path( const char* path, int codepage );
-
-std::string PathBasename( const std::string& path );
 
 }
 
