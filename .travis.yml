@@ -5,7 +5,7 @@ install:
   - sudo cp -r cmake/* /usr
   - cmake --version
   - sudo pip install cpp-coveralls
-script: cmake -DCOVERAGE=true . && make && make test
+script: cmake -DCOVERAGE=true . && make && make check
 after_success:
   - coveralls --exclude cmake --exclude External --gcov-options '\-lp'
 notifications:

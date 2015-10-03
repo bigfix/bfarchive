@@ -11,5 +11,5 @@ else
 fi
 
 cmake $SOURCE_DIR
-make all test
+make all check
 tar -czf bfarchive-$PLATFORM.tar.gz bfarchive

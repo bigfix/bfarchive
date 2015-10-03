@@ -1,3 +1,4 @@
 .DS_Store
 Vagrantfile
 .vagrant
+vagrant-provision.sh
