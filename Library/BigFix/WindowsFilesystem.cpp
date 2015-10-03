@@ -20,11 +20,56 @@
 #include <fcntl.h>
 #include <io.h>
 
+static std::string ErrorString( int errnum )
+{
+  wchar_t buffer16[1024];
+
+  DWORD length16 =
+    FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                   NULL,
+                   errnum,
+                   0,
+                   buffer16,
+                   _countof( buffer16 ),
+                   NULL );
+
+  if ( length16 == 0 )
+    return "Unknown error";
+
+  char buffer8[1024];
+
+  if ( WideCharToMultiByte( CP_UTF8,
+                            0,
+                            buffer16,
+                            length16,
+                            buffer8,
+                            sizeof( buffer8 ),
+                            NULL,
+                            NULL ) == 0 )
+  {
+    return "Unknown error";
+  }
+
+  return buffer8;
+}
+
+std::string ErrorString( const std::string& what, int errnum )
+{
+  return what + ": " + ErrorString( errnum );
+}
+
+static std::string FileErrorString( const std::string& what,
+                                    const std::string& path,
+                                    int errnum )
+{
+  return ErrorString( what + " " + path, errnum );
+}
+
 namespace BigFix
 {
 
-WindowsFile::WindowsFile( HANDLE handle )
-  : m_handle( handle )
+WindowsFile::WindowsFile( HANDLE handle, const std::string& path )
+  : m_handle( handle ), m_path( path )
 {
 }
 
@@ -48,10 +93,12 @@ void WindowsFile::SetModificationTime( const DateTime& mtime )
 
   FILETIME fileTime;
   if ( !SystemTimeToFileTime( &systemTime, &fileTime ) )
-    throw Error( "Failed to convert modification time to file time" );
+    throw Error( ErrorString(
+      "Failed to convert modification time to file time", GetLastError() ) );
 
   if ( !SetFileTime( m_handle, NULL, NULL, &fileTime ) )
-    throw Error( "Failed to set modification time" );
+    throw Error( FileErrorString(
+      "Failed to set modification time on", m_path, GetLastError() ) );
 }
 
 size_t WindowsFile::Read( uint8_t* buffer, size_t length )
@@ -61,7 +108,8 @@ size_t WindowsFile::Read( uint8_t* buffer, size_t length )
   if ( !ReadFile(
          m_handle, buffer, static_cast<DWORD>( length ), &nread, NULL ) )
   {
-    throw Error( "Failed to read file" );
+    throw Error(
+      FileErrorString( "Failed to read file", m_path, GetLastError() ) );
   }
 
   return nread;
@@ -82,7 +130,8 @@ void WindowsFile::Write( DataRef data )
                      &nwritten,
                      NULL ) )
     {
-      throw Error( "Failed to write file" );
+      throw Error(
+        FileErrorString( "Failed to write file", m_path, GetLastError() ) );
     }
 
     start += nwritten;
@@ -100,7 +149,8 @@ static std::wstring MakeWindowsFilePath( const char* path )
                             output,
                             _countof( output ) ) == 0 )
   {
-    throw Error( "Failed to transcode utf-8 to utf-16" );
+    throw Error(
+      ErrorString( "Failed to transcode utf-8 to utf-16", GetLastError() ) );
   }
 
   for ( wchar_t* it = output; *it; it++ )
@@ -123,7 +173,8 @@ std::string MakePortableFilePath( const wchar_t* path )
                             NULL,
                             NULL ) == 0 )
   {
-    throw Error( "Failed to transcode utf-16 to utf-8" );
+    throw Error(
+      ErrorString( "Failed to transcode utf-16 to utf-8", GetLastError() ) );
   }
 
   for ( char* it = output; *it; it++ )
@@ -148,13 +199,13 @@ static std::auto_ptr<File> OpenFile( const char* path,
                               NULL );
 
   if ( handle == INVALID_HANDLE_VALUE )
-    throw Error( "Failed to open or create file" );
+    throw Error( FileErrorString( "Failed to open", path, GetLastError() ) );
 
   std::auto_ptr<File> file;
 
   try
   {
-    file.reset( new WindowsFile( handle ) );
+    file.reset( new WindowsFile( handle, path ) );
   }
   catch ( ... )
   {
@@ -185,7 +236,8 @@ void MakeDir( const char* path )
   if ( GetLastError() == ERROR_ALREADY_EXISTS && Stat( path ).IsDirectory() )
     return;
 
-  throw Error( "Failed to create directory" );
+  throw Error(
+    FileErrorString( "Failed to create directory", path, GetLastError() ) );
 }
 
 FindHandle::FindHandle( HANDLE handle ) : m_handle( handle )
@@ -206,7 +258,8 @@ FileStatus Stat( const char* path )
   FindHandle findHandle( FindFirstFile( windowsPath.c_str(), &findData ) );
 
   if ( findHandle == INVALID_HANDLE_VALUE )
-    throw Error( "Failed to stat file" );
+    throw Error(
+      FileErrorString( "Failed to stat file", path, GetLastError() ) );
 
   LARGE_INTEGER fileSize;
   fileSize.HighPart = findData.nFileSizeHigh;
@@ -214,7 +267,8 @@ FileStatus Stat( const char* path )
 
   SYSTEMTIME systemTime;
   if ( !FileTimeToSystemTime( &findData.ftLastWriteTime, &systemTime ) )
-    throw Error( "Failed to convert file time to system time" );
+    throw Error( ErrorString( "Failed to convert file time to system time",
+                              GetLastError() ) );
 
   DateTime mtime( systemTime.wYear,
                   static_cast<uint8_t>( systemTime.wMonth ),
@@ -241,7 +295,7 @@ void StreamStdIn( Stream& stream )
     int nread = _read( 0, buffer, sizeof( buffer ) );
 
     if ( nread < 0 )
-      throw Error( "Failed to read from stdin" );
+      throw Error( ErrorString( "Failed to read from stdin", GetLastError() ) );
 
     if ( nread == 0 )
       break;
@@ -264,10 +318,13 @@ std::vector<std::string> ReadDir( const char* path )
 
   if ( findHandle == INVALID_HANDLE_VALUE )
   {
-    if ( GetLastError() == ERROR_FILE_NOT_FOUND )
+    DWORD lastError = GetLastError();
+
+    if ( lastError == ERROR_FILE_NOT_FOUND )
       return entries;
 
-    throw Error( "Failed to read directory" );
+    throw Error(
+      FileErrorString( "Failed to read directory", path, lastError ) );
   }
 
   while ( true )
@@ -279,10 +336,13 @@ std::vector<std::string> ReadDir( const char* path )
 
     if ( !FindNextFile( findHandle, &findData ) )
     {
-      if ( GetLastError() == ERROR_NO_MORE_FILES )
+      DWORD lastError = GetLastError();
+
+      if ( lastError == ERROR_NO_MORE_FILES )
         break;
 
-      throw Error( "Failed to read directory" );
+      throw Error(
+        FileErrorString( "Failed to read directory", path, lastError ) );
     }
   }
 
@@ -308,7 +368,8 @@ std::string LocalPathToUTF8Path( const char* path, int codepage )
                             utf16,
                             _countof( utf16 ) ) == 0 )
   {
-    throw Error( "Failed to transcode local path to utf-16" );
+    throw Error( FileErrorString(
+      "Failed to transcode local path to utf-16", path, GetLastError() ) );
   }
 
   char utf8[1024];
@@ -322,7 +383,8 @@ std::string LocalPathToUTF8Path( const char* path, int codepage )
                             NULL,
                             NULL ) == 0 )
   {
-    throw Error( "Failed to transcode utf-16 to utf-8" );
+    throw Error( FileErrorString(
+      "Failed to transcode utf-16 to utf-8", path, GetLastError() ) );
   }
 
   return utf8;

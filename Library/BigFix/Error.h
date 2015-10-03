@@ -18,7 +18,7 @@
 #define BigFix_Error_h
 
 #include <exception>
-#include <stddef.h>
+#include <string>
 
 namespace BigFix
 {
@@ -26,16 +26,13 @@ namespace BigFix
 class Error : public std::exception
 {
 public:
-  template <size_t n>
-  explicit Error( const char ( &literal )[n] ) throw()
-    : m_what( literal )
-  {
-  }
+  explicit Error( const std::string& message );
+  virtual ~Error() throw();
 
   virtual const char* what() const throw();
 
 private:
-  const char* m_what;
+  std::string m_message;
 };
 
 }

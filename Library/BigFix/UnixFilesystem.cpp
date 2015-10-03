@@ -24,6 +24,28 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+static std::string StringError( int errnum )
+{
+  char buffer[4096];
+
+#ifdef __APPLE__
+  int status = strerror_r( errnum, buffer, sizeof( buffer ) );
+  if ( status )
+    return "Unknown error";
+
+  return buffer;
+#else
+  return strerror_r( errnum, buffer, sizeof( buffer ) );
+#endif
+}
+
+static std::string FileErrorString( const std::string& what,
+                                    const std::string& path,
+                                    int errnum )
+{
+  return what + " " + path + ": " + StringError( errnum );
+}
+
 namespace BigFix
 {
 
@@ -59,7 +81,8 @@ void UnixFile::SetModificationTime( const DateTime& mtime )
   fileTimes[1].tv_sec = unixTime;
 
   if ( utimes( m_path.c_str(), fileTimes ) )
-    throw Error( "Failed to set modification time" );
+    throw Error(
+      FileErrorString( "Failed to set modification time on", m_path, errno ) );
 }
 
 size_t UnixFile::Read( uint8_t* buffer, size_t length )
@@ -67,7 +90,7 @@ size_t UnixFile::Read( uint8_t* buffer, size_t length )
   ssize_t nread = read( m_fd, buffer, length );
 
   if ( nread < 0 )
-    throw Error( "Failed to read file" );
+    throw Error( FileErrorString( "Failed to read file", m_path, errno ) );
 
   return nread;
 }
@@ -82,7 +105,7 @@ void UnixFile::Write( DataRef data )
     ssize_t nwritten = write( m_fd, start, end - start );
 
     if ( nwritten < 0 )
-      throw Error( "Failed to write file" );
+      throw Error( FileErrorString( "Failed to write file", m_path, errno ) );
 
     start += nwritten;
   }
@@ -91,7 +114,7 @@ void UnixFile::Write( DataRef data )
 static std::auto_ptr<File> OpenFile( const char* path, int fd )
 {
   if ( fd < 0 )
-    throw Error( "Failed to open or create file" );
+    throw Error( FileErrorString( "Failed to open", path, errno ) );
 
   std::auto_ptr<File> file;
 
@@ -130,7 +153,7 @@ void MakeDir( const char* path )
   if ( errno == EEXIST && Stat( path ).IsDirectory() )
     return;
 
-  throw Error( "Failed to create directory" );
+  throw Error( FileErrorString( "Failed to create directory", path, errno ) );
 }
 
 FileStatus Stat( const char* path )
@@ -138,11 +161,12 @@ FileStatus Stat( const char* path )
   struct stat stats;
 
   if ( stat( path, &stats ) )
-    throw Error( "Failed to stat file" );
+    throw Error( FileErrorString( "Failed to stat file", path, errno ) );
 
   struct tm result;
   if ( gmtime_r( &stats.st_mtime, &result ) == 0 )
-    throw Error( "Failed to convert file time to DateTime" );
+    throw Error( FileErrorString(
+      "Failed to convert file time to DateTime", path, errno ) );
 
   DateTime mtime( result.tm_year + 1900,
                   result.tm_mon + 1,
@@ -165,7 +189,7 @@ void StreamStdIn( Stream& stream )
     ssize_t nread = read( 0, buffer, sizeof( buffer ) );
 
     if ( nread < 0 )
-      throw Error( "Failed to read from stdin" );
+      throw Error( "Failed to read from stdin: " + StringError( errno ) );
 
     if ( nread == 0 )
       break;
@@ -181,7 +205,7 @@ OpenDir::OpenDir( const char* path )
   m_dir = opendir( path );
 
   if ( !m_dir )
-    throw Error( "Failed to open directory" );
+    throw Error( FileErrorString( "Failed to open directory", path, errno ) );
 }
 
 OpenDir::~OpenDir()
@@ -201,7 +225,7 @@ std::vector<std::string> ReadDir( const char* path )
     struct dirent* result;
 
     if ( readdir_r( dir, &entry, &result ) )
-      throw Error( "Failed to read directory contents" );
+      throw Error( FileErrorString( "Failed to read directory", path, errno ) );
 
     if ( !result )
       break;

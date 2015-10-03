@@ -66,7 +66,7 @@ void ArgParser::ParseShortOptions( const char* options )
     const Option* matchingOption = FindShortOption( *option );
 
     if ( !matchingOption )
-      throw Error( "Unknown option value" );
+      throw Error( "Unknown option value: " + std::string( option ) );
 
     SetOption( *matchingOption );
   }
@@ -77,7 +77,7 @@ void ArgParser::ParseLongOption( const char* option )
   const Option* matchingOption = FindLongOption( option );
 
   if ( !matchingOption )
-    throw Error( "Unknown option value" );
+    throw Error( "Unknown option value: " + std::string( option ) );
 
   SetOption( *matchingOption );
 }

@@ -26,7 +26,7 @@ namespace BigFix
 class WindowsFile : public File
 {
 public:
-  explicit WindowsFile( HANDLE handle );
+  WindowsFile( HANDLE handle, const std::string& path );
   virtual ~WindowsFile();
 
   virtual void SetModificationTime( const DateTime& );
@@ -36,6 +36,7 @@ public:
 
 private:
   HANDLE m_handle;
+  std::string m_path;
 };
 
 class FindHandle

@@ -73,7 +73,8 @@ void ArchiveReader::Write( DataRef data )
       break;
 
     case STATE_DONE:
-      throw Error( "More data received after the end of the archive" );
+      throw Error(
+        "Bad archive: more data received after the end of the archive" );
     }
   }
 }
@@ -112,7 +113,7 @@ const uint8_t* ArchiveReader::FileLengthLength( const uint8_t* start,
   }
   else
   {
-    throw Error( "Invalid archive" );
+    throw Error( "Bad archive: invalid file header" );
   }
 
   m_state = STATE_PATH_LENGTH;
@@ -177,7 +178,7 @@ const uint8_t* ArchiveReader::Path( const uint8_t* start, const uint8_t* end )
       m_path[m_pos] = 0;
 
     if ( HasDotDotComponent( DataRef( m_path, m_path + m_length ) ) )
-      throw Error( "Paths in archives cannot contain '..'" );
+      throw Error( "Bad archive: paths in archives cannot contain '..'" );
 
     m_isDirectory = ( m_length > 0 ) && ( m_path[m_length - 1] == '/' );
     m_state = STATE_DATE_LENGTH;
@@ -229,7 +230,8 @@ const uint8_t* ArchiveReader::FileLength( const uint8_t* start,
     if ( m_isDirectory )
     {
       if ( m_fileLength )
-        throw Error( "A directory has a non-zero file length." );
+        throw Error( "Bad archive: non-zero file length for directory: " +
+                     utf8Path );
 
       m_output.Directory( utf8Path.c_str(), m_mtime );
 

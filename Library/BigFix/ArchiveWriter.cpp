@@ -66,7 +66,8 @@ void ArchiveWriter::WriteHeader( const char* path,
      m_output.Write( DataRef( "2" ) );
 
    if ( !IsValidUTF8( path ) )
-     throw Error( "File or directory names must either be Ascii or UTF-8" );
+     throw Error( "Failed to write archive: path is not valid UTF-8: " +
+                  std::string( path ) );
 
   if ( length > std::numeric_limits<uint32_t>::max() )
     m_output.Write( DataRef( "1" ) );
@@ -76,7 +77,9 @@ void ArchiveWriter::WriteHeader( const char* path,
   size_t pathLengthWithNull = strlen( path ) + 1;
 
   if ( pathLengthWithNull > 255 )
-    throw Error( "File or directory paths must be less than 255 characters" );
+    throw Error(
+      "Failed to write archive: path is greater than 254 characters: " +
+      std::string( path ) );
 
   WriteLittleEndian( pathLengthWithNull, buffer, 1 );
 

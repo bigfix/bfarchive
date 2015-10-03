@@ -19,9 +19,16 @@
 namespace BigFix
 {
 
-const char* Error::what() const throw()
+Error::Error( const std::string& message ): m_message( message )
 {
-  return m_what;
 }
 
+Error::~Error() throw()
+{
+}
+
+const char* Error::what() const throw()
+{
+  return m_message.c_str();
+}
 }
