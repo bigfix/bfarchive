@@ -38,14 +38,9 @@ static std::string ErrorString( int errnum )
 
   char buffer8[1024];
 
-  if ( WideCharToMultiByte( CP_UTF8,
-                            0,
-                            buffer16,
-                            length16,
-                            buffer8,
-                            sizeof( buffer8 ),
-                            NULL,
-                            NULL ) == 0 )
+  if ( WideCharToMultiByte(
+         CP_UTF8, 0, buffer16, -1, buffer8, sizeof( buffer8 ), NULL, NULL ) ==
+       0 )
   {
     return "Unknown error";
   }
