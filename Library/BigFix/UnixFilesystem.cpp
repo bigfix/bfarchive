@@ -150,10 +150,12 @@ void MakeDir( const char* path )
   if ( mkdir( path, S_IRWXU ) == 0 )
     return;
 
-  if ( errno == EEXIST && Stat( path ).IsDirectory() )
+  int errnum = errno;
+
+  if ( errnum == EEXIST && Stat( path ).IsDirectory() )
     return;
 
-  throw Error( FileErrorString( "Failed to create directory", path, errno ) );
+  throw Error( FileErrorString( "Failed to create directory", path, errnum ) );
 }
 
 FileStatus Stat( const char* path )

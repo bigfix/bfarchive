@@ -233,11 +233,13 @@ void MakeDir( const char* path )
   if ( CreateDirectory( windowsPath.c_str(), NULL ) )
     return;
 
-  if ( GetLastError() == ERROR_ALREADY_EXISTS && Stat( path ).IsDirectory() )
+  DWORD lastError = GetLastError();
+
+  if ( lastError == ERROR_ALREADY_EXISTS && Stat( path ).IsDirectory() )
     return;
 
   throw Error(
-    FileErrorString( "Failed to create directory", path, GetLastError() ) );
+    FileErrorString( "Failed to create directory", path, lastError ) );
 }
 
 FindHandle::FindHandle( HANDLE handle ) : m_handle( handle )
@@ -254,19 +256,20 @@ FileStatus Stat( const char* path )
 {
   std::wstring windowsPath = MakeWindowsFilePath( path );
 
-  WIN32_FIND_DATA findData;
-  FindHandle findHandle( FindFirstFile( windowsPath.c_str(), &findData ) );
-
-  if ( findHandle == INVALID_HANDLE_VALUE )
+  WIN32_FILE_ATTRIBUTE_DATA fileData;
+  if ( !GetFileAttributesEx(
+         windowsPath.c_str(), GetFileExInfoStandard, &fileData ) )
+  {
     throw Error(
       FileErrorString( "Failed to stat file", path, GetLastError() ) );
+  }
 
   LARGE_INTEGER fileSize;
-  fileSize.HighPart = findData.nFileSizeHigh;
-  fileSize.LowPart = findData.nFileSizeLow;
+  fileSize.HighPart = fileData.nFileSizeHigh;
+  fileSize.LowPart = fileData.nFileSizeLow;
 
   SYSTEMTIME systemTime;
-  if ( !FileTimeToSystemTime( &findData.ftLastWriteTime, &systemTime ) )
+  if ( !FileTimeToSystemTime( &fileData.ftLastWriteTime, &systemTime ) )
     throw Error( ErrorString( "Failed to convert file time to system time",
                               GetLastError() ) );
 
@@ -279,7 +282,7 @@ FileStatus Stat( const char* path )
                   static_cast<uint8_t>( systemTime.wSecond ) );
 
   bool isDirectory =
-    ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) ? true : false;
+    ( fileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) ? true : false;
 
   return FileStatus( fileSize.QuadPart, mtime, isDirectory, !isDirectory );
 }
