@@ -1,6 +1,7 @@
 language: cpp
 before_install:
-  - pip install cpp-coveralls
+  - pip install --user cpp-coveralls
+  - export PATH=$PATH:$HOME/.local/bin
 install:
   - wget https://dl.dropboxusercontent.com/u/15529534/cmake-2.8.12.tgz
   - tar -xf cmake-2.8.12.tgz
