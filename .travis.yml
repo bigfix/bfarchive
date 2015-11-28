@@ -8,7 +8,7 @@ install:
 script: cmake -DCOVERAGE=true . && make && make check
 after_success:
   - coveralls --gcov-options '\-lp' --dump coverage.json
-  - filtered-coverage
+  - filter-coverage.py
   - curl -F 'json_file=@filtered-coverage.json' https://coveralls.io/api/v1/jobs
 notifications:
   email: false
