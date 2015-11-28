@@ -6,7 +6,10 @@ install:
   - wget https://dl.dropboxusercontent.com/u/15529534/cmake-2.8.12.tgz
   - tar -xf cmake-2.8.12.tgz
   - ./cmake/bin/cmake --version
-script: cmake -DCOVERAGE=true . && make && make check
+script:
+  - ./cmake/bin/cmake -DCOVERAGE=true .
+  - make
+  - make check
 after_success:
   - coveralls --gcov-options '\-lp' --dump coverage.json
   - ./filter-coverage.py
