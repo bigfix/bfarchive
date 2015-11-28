@@ -17,7 +17,14 @@
 #include "DeflateStream.h"
 #include "BigFix/DataRef.h"
 #include "BigFix/Error.h"
+#include "BigFix/TestSeams.h"
 #include <string.h>
+
+#ifdef ENABLE_TEST_SEAMS
+#undef deflateInit
+#define deflateInit Wrap_deflateInit
+#define deflate Wrap_deflate
+#endif
 
 namespace BigFix
 {

@@ -15,8 +15,8 @@ add_executable(run_unit EXCLUDE_FROM_ALL
   UTF8Test.cpp
 )
 
-target_compile_options(run_unit PRIVATE ${BIGFIX_COMPILE_OPTIONS})
-target_link_libraries(run_unit bigfix gtest ${BIGFIX_LINK_OPTIONS})
+target_compile_options(run_unit PRIVATE ${BIGFIX_COMPILE_TEST})
+target_link_libraries(run_unit bigfix_testing gtest ${BIGFIX_LINK_TEST})
 
 add_custom_target(unit
   DEPENDS run_unit
@@ -33,8 +33,8 @@ add_custom_target(unit
 )
 
 add_custom_target(integration
-  DEPENDS bfarchive unit
-  COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/BFArchiveTest.py $<TARGET_FILE:bfarchive>
+  DEPENDS bfarchive_testing unit
+  COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/BFArchiveTest.py $<TARGET_FILE:bfarchive_testing>
 )
 
 add_custom_target(check DEPENDS unit integration)

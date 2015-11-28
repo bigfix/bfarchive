@@ -17,8 +17,14 @@
 #include "InflateStream.h"
 #include "BigFix/DataRef.h"
 #include "BigFix/Error.h"
+#include "BigFix/TestSeams.h"
 #include <algorithm>
 #include <string.h>
+
+#ifdef ENABLE_TEST_SEAMS
+#undef inflateInit
+#define inflateInit Wrap_inflateInit
+#endif
 
 namespace BigFix
 {
