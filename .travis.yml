@@ -1,10 +1,10 @@
 language: cpp
+before_install:
+  - pip install cpp-coveralls
 install:
   - wget https://dl.dropboxusercontent.com/u/15529534/cmake-2.8.12.tgz
   - tar -xf cmake-2.8.12.tgz
-  - sudo cp -r cmake/* /usr
-  - cmake --version
-  - sudo pip install cpp-coveralls
+  - ./cmake/bin/cmake --version
 script: cmake -DCOVERAGE=true . && make && make check
 after_success:
   - coveralls --gcov-options '\-lp' --dump coverage.json
@@ -12,3 +12,4 @@ after_success:
   - curl -F 'json_file=@filtered-coverage.json' https://coveralls.io/api/v1/jobs
 notifications:
   email: false
+sudo: false
