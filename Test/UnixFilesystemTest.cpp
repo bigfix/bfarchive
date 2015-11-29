@@ -21,6 +21,7 @@
 #include "ScopedMock.h"
 #include "TestUtility.h"
 #include <gtest/gtest.h>
+#include <errno.h>
 
 using namespace BigFix;
 
