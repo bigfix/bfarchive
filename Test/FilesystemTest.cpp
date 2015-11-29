@@ -23,11 +23,6 @@
 
 using namespace BigFix;
 
-static std::string Sandbox( const std::string& path )
-{
-  return JoinPath( "FilesystemTestSandbox", path );
-}
-
 TEST( FilesystemTest, IsDots )
 {
   EXPECT_TRUE( IsDots( "." ) );

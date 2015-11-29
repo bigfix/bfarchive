@@ -1,4 +1,4 @@
-add_executable(run_unit EXCLUDE_FROM_ALL
+list(APPEND SOURCES
   ArchiveReaderTest.cpp
   ArchiveWriterTest.cpp
   ArgParserTest.cpp
@@ -14,6 +14,13 @@ add_executable(run_unit EXCLUDE_FROM_ALL
   TestUtility.cpp
   UTF8Test.cpp
 )
+
+if(WIN32)
+else()
+  list(APPEND SOURCES UnixFilesystemTest.cpp)
+endif()
+
+add_executable(run_unit EXCLUDE_FROM_ALL ${SOURCES})
 
 target_compile_options(run_unit PRIVATE ${BIGFIX_COMPILE_TEST})
 target_link_libraries(run_unit bigfix_testing gtest ${BIGFIX_LINK_TEST})

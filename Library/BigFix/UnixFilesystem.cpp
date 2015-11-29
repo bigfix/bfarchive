@@ -17,12 +17,17 @@
 #include "UnixFilesystem.h"
 #include "BigFix/DataRef.h"
 #include "BigFix/Error.h"
+#include "BigFix/UnixTestSeams.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
+
+#ifdef ENABLE_TEST_SEAMS
+#define utimes Wrap_utimes
+#endif
 
 static std::string StringError( int errnum )
 {

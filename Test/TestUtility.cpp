@@ -16,6 +16,7 @@
 
 #include "TestUtility.h"
 #include "BigFix/DataRef.h"
+#include "BigFix/Filesystem.h"
 
 using namespace BigFix;
 
@@ -58,4 +59,9 @@ void WriteOneByOneAndEnd( Stream& stream, DataRef data )
   }
 
   stream.End();
+}
+
+std::string Sandbox( const std::string& path )
+{
+  return JoinPath( "FilesystemTestSandbox", path );
 }

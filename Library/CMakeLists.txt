@@ -26,7 +26,18 @@ target_compile_options(bigfix PRIVATE ${BIGFIX_COMPILE})
 target_include_directories(bigfix PUBLIC .)
 target_link_libraries(bigfix zlibstatic)
 
-add_library(bigfix_testing EXCLUDE_FROM_ALL ${SOURCES} BigFix/TestSeams.cpp)
+list(APPEND TESTING_SOURCES
+  ${SOURCES}
+  BigFix/TestSeams.cpp
+)
+
+if (WIN32)
+  list(APPEND TESTING_SOURCES BigFix/WindowsTestSeams.cpp)
+else()
+  list(APPEND TESTING_SOURCES BigFix/UnixTestSeams.cpp)
+endif()
+
+add_library(bigfix_testing EXCLUDE_FROM_ALL ${TESTING_SOURCES})
 
 target_compile_options(bigfix_testing PRIVATE ${BIGFIX_COMPILE_TEST})
 target_include_directories(bigfix_testing PUBLIC .)
