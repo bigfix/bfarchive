@@ -15,6 +15,9 @@
 */
 
 #include "TestSeams.h"
+#include <stdio.h>
+
+// Wrap 'deflateInit'.
 
 static Type_deflateInit wrap_deflateInit = Real_deflateInit;
 
@@ -33,6 +36,8 @@ void Set_deflateInit( Type_deflateInit wrapFunction )
   wrap_deflateInit = wrapFunction;
 }
 
+// Wrap 'deflate'.
+
 static Type_deflate wrap_deflate = Real_deflate;
 
 int Real_deflate( z_stream* stream, int flush )
@@ -50,6 +55,8 @@ void Set_deflate( Type_deflate wrapFunction )
   wrap_deflate = wrapFunction;
 }
 
+// Wrap 'inflateInit'.
+
 static Type_inflateInit wrap_inflateInit = Real_inflateInit;
 
 int Real_inflateInit( z_stream* stream )
@@ -65,4 +72,47 @@ int Wrap_inflateInit( z_stream* stream )
 void Set_inflateInit( Type_inflateInit wrapFunction )
 {
   wrap_inflateInit = wrapFunction;
+}
+
+// Wrap 'snprintf'.
+
+static Type_snprintf wrap_snprintf = Real_snprintf;
+
+#ifdef _WIN32
+#define snprintf _snprintf_s
+#endif
+
+int Real_snprintf( char* buffer,
+                   size_t size,
+                   const char* format,
+                   const char* dayOfWeek,
+                   int day,
+                   const char* month,
+                   int year,
+                   int hour,
+                   int minute,
+                   int second )
+{
+  return snprintf(
+    buffer, size, format, dayOfWeek, day, month, year, hour, minute, second );
+}
+
+int Wrap_snprintf( char* buffer,
+                   size_t size,
+                   const char* format,
+                   const char* dayOfWeek,
+                   int day,
+                   const char* month,
+                   int year,
+                   int hour,
+                   int minute,
+                   int second )
+{
+  return wrap_snprintf(
+    buffer, size, format, dayOfWeek, day, month, year, hour, minute, second );
+}
+
+void Set_snprintf( Type_snprintf wrapFunction )
+{
+  wrap_snprintf = wrapFunction;
 }

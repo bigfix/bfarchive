@@ -45,10 +45,39 @@ void Set_inflateInit( Type_inflateInit );
 
 // Wrap 'snprintf'.
 
-int Real_snprintf( z_stream* );
-int Wrap_snprintf( z_stream* );
+int Real_snprintf( char*,
+                   size_t,
+                   const char*,
+                   const char*,
+                   int,
+                   const char*,
+                   int,
+                   int,
+                   int,
+                   int );
 
-typedef int ( *Type_snprintf )( z_stream* );
+int Wrap_snprintf( char*,
+                   size_t,
+                   const char*,
+                   const char*,
+                   int,
+                   const char*,
+                   int,
+                   int,
+                   int,
+                   int );
+
+typedef int ( *Type_snprintf )( char*,
+                                size_t,
+                                const char*,
+                                const char*,
+                                int,
+                                const char*,
+                                int,
+                                int,
+                                int,
+                                int );
+
 void Set_snprintf( Type_snprintf );
 
 #endif
