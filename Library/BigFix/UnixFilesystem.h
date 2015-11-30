@@ -26,8 +26,10 @@ namespace BigFix
 class UnixFile : public File
 {
 public:
-  UnixFile( int fd, const std::string& path );
+  explicit UnixFile( const std::string& path );
   virtual ~UnixFile();
+
+  void SetFile( int fd );
 
   virtual void SetModificationTime( const DateTime& );
 

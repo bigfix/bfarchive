@@ -54,14 +54,20 @@ static std::string FileErrorString( const std::string& what,
 namespace BigFix
 {
 
-UnixFile::UnixFile( int fd, const std::string& path )
-  : m_fd( fd ), m_path( path )
+UnixFile::UnixFile( const std::string& path )
+  : m_fd( -1 ), m_path( path )
 {
+}
+
+void UnixFile::SetFile( int fd )
+{
+  m_fd = fd;
 }
 
 UnixFile::~UnixFile()
 {
-  close( m_fd );
+  if ( m_fd != -1 )
+    close( m_fd );
 }
 
 void UnixFile::SetModificationTime( const DateTime& mtime )
@@ -116,38 +122,38 @@ void UnixFile::Write( DataRef data )
   }
 }
 
-static std::auto_ptr<File> OpenFile( const char* path, int fd )
+static void ThrowOpenError( const char* path, int fd )
 {
   if ( fd < 0 )
     throw Error( FileErrorString( "Failed to open", path, errno ) );
-
-  std::auto_ptr<File> file;
-
-  try
-  {
-    file.reset( new UnixFile( fd, path ) );
-  }
-  catch ( ... )
-  {
-    close( fd );
-    throw;
-  }
-
-  return file;
 }
 
 std::auto_ptr<File> OpenAsNewFile( const char* path )
 {
-  return OpenFile(
-    path,
-    open( path,
-          O_RDWR | O_CREAT | O_TRUNC,
-          S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH ) );
+  std::auto_ptr<UnixFile> file( new UnixFile( path ) );
+
+  int fd = open( path,
+                 O_RDWR | O_CREAT | O_TRUNC,
+                 S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
+
+  ThrowOpenError( path, fd );
+  file->SetFile( fd );
+
+  std::auto_ptr<File> base( file.release() );
+  return base;
 }
 
 std::auto_ptr<File> OpenExistingFile( const char* path )
 {
-  return OpenFile( path, open( path, O_RDONLY ) );
+  std::auto_ptr<UnixFile> file( new UnixFile( path ) );
+
+  int fd = open( path, O_RDONLY );
+
+  ThrowOpenError( path, fd );
+  file->SetFile( fd );
+
+  std::auto_ptr<File> base( file.release() );
+  return base;
 }
 
 void MakeDir( const char* path )
