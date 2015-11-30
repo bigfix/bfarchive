@@ -16,6 +16,7 @@
 
 #include "UnixTestSeams.h"
 #include <sys/time.h>
+#include <unistd.h>
 
 // Wrap 'utimes'.
 
@@ -34,4 +35,23 @@ int Wrap_utimes( const char* filename, const struct timeval* times )
 void Set_utimes( Type_utimes wrapFunction )
 {
   wrap_utimes = wrapFunction;
+}
+
+// Wrap 'read'.
+
+static Type_read wrap_read = Real_read;
+
+int Real_read( int fd, void* buf, size_t count )
+{
+  return read( fd, buf, count );
+}
+
+int Wrap_read( int fd, void* buf, size_t count )
+{
+  return wrap_read( fd, buf, count );
+}
+
+void Set_read( Type_read wrapFunction )
+{
+  wrap_read = wrapFunction;
 }

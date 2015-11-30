@@ -17,6 +17,8 @@
 #ifndef BigFix_UnixTestSeams_h
 #define BigFix_UnixTestSeams_h
 
+#include <stddef.h>
+
 // Wrap 'utimes'.
 
 int Real_utimes( const char*, const struct timeval* );
@@ -24,5 +26,13 @@ int Wrap_utimes( const char*, const struct timeval* );
 
 typedef int ( *Type_utimes )( const char*, const struct timeval* );
 void Set_utimes( Type_utimes );
+
+// Wrap 'read'.
+
+int Real_read( int, void*, size_t );
+int Wrap_read( int, void*, size_t );
+
+typedef int ( *Type_read )( int, void*, size_t );
+void Set_read( Type_read );
 
 #endif

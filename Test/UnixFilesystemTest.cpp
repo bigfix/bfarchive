@@ -25,7 +25,7 @@
 
 using namespace BigFix;
 
-static int utimesError( const char* filename, const struct timeval* times )
+static int utimesError( const char*, const struct timeval* )
 {
   errno = EACCES;
   return -1;
@@ -48,6 +48,35 @@ TEST( FilesystemTest, SetModificationTimeFails )
     std::string message = err.what();
     EXPECT_TRUE( message.find( "Failed to set modification time" ) !=
                  message.npos );
+  }
+  catch ( ... ) { FAIL(); }
+}
+
+static int readError( int, void*, size_t )
+{
+  errno = EBADF;
+  return -1;
+}
+
+TEST( FilesystemTest, ReadFileFails )
+{
+  std::string fileName = Sandbox( "ReadFileFails" );
+
+  ScopedMock<Type_read> guard( readError, Real_read, Set_read );
+
+  try
+  {
+    std::auto_ptr<File> file = OpenAsNewFile( fileName.c_str() );
+
+    uint8_t buffer[32];
+    size_t nread = file->Read( buffer, sizeof( buffer ) );
+
+    FAIL();
+  }
+  catch ( const std::exception& err )
+  {
+    std::string message = err.what();
+    EXPECT_TRUE( message.find( "Failed to read file" ) != message.npos );
   }
   catch ( ... ) { FAIL(); }
 }
