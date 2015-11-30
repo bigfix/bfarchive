@@ -127,3 +127,29 @@ TEST( FilesystemTest, WriteFileFails )
   }
   catch ( ... ) { FAIL(); }
 }
+
+static int readdir_rFails( DIR*, struct dirent*, struct dirent** )
+{
+  return EBADF;
+}
+
+TEST( FilesystemTest, ReadDirFails )
+{
+  std::string dirName = Sandbox( "ReadDirFails" );
+  MakeDir( dirName.c_str() );
+
+  ScopedMock<Type_readdir_r> guard(
+    readdir_rFails, Real_readdir_r, Set_readdir_r );
+
+  try
+  {
+    ReadDir( dirName.c_str() );
+    FAIL();
+  }
+  catch ( const std::exception& err )
+  {
+    std::string message = err.what();
+    EXPECT_TRUE( message.find( "Failed to read directory" ) != message.npos );
+  }
+  catch ( ... ) { FAIL(); }
+}

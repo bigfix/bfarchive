@@ -74,3 +74,22 @@ void Set_write( Type_write wrapFunction )
 {
   wrap_write = wrapFunction;
 }
+
+// Wrap 'readdir_r'.
+
+static Type_readdir_r wrap_readdir_r = Real_readdir_r;
+
+int Real_readdir_r( DIR* dirp, struct dirent* entry, struct dirent** result )
+{
+  return readdir_r( dirp, entry, result );
+}
+
+int Wrap_readdir_r( DIR* dirp, struct dirent* entry, struct dirent** result )
+{
+  return wrap_readdir_r( dirp, entry, result );
+}
+
+void Set_readdir_r( Type_readdir_r wrapFunction )
+{
+  wrap_readdir_r = wrapFunction;
+}

@@ -18,6 +18,7 @@
 #define BigFix_UnixTestSeams_h
 
 #include <stddef.h>
+#include <dirent.h>
 
 // Wrap 'utimes'.
 
@@ -42,5 +43,13 @@ int Wrap_write( int, const void*, size_t );
 
 typedef int ( *Type_write )( int, const void*, size_t );
 void Set_write( Type_write );
+
+// Wrap 'readdir_r'.
+
+int Real_readdir_r( DIR*, struct dirent*, struct dirent** );
+int Wrap_readdir_r( DIR*, struct dirent*, struct dirent** );
+
+typedef int ( *Type_readdir_r )( DIR*, struct dirent*, struct dirent** );
+void Set_readdir_r( Type_readdir_r );
 
 #endif

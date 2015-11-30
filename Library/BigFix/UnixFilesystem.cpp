@@ -29,6 +29,7 @@
 #define utimes Wrap_utimes
 #define read Wrap_read
 #define write Wrap_write
+#define readdir_r Wrap_readdir_r
 #endif
 
 static std::string StringError( int errnum )
@@ -239,8 +240,9 @@ std::vector<std::string> ReadDir( const char* path )
     struct dirent entry;
     struct dirent* result;
 
-    if ( readdir_r( dir, &entry, &result ) )
-      throw Error( FileErrorString( "Failed to read directory", path, errno ) );
+    int error = readdir_r( dir, &entry, &result );
+    if ( error != 0 )
+      throw Error( FileErrorString( "Failed to read directory", path, error ) );
 
     if ( !result )
       break;
