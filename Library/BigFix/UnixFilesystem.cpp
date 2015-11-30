@@ -30,6 +30,7 @@
 #define read Wrap_read
 #define write Wrap_write
 #define readdir_r Wrap_readdir_r
+#define gmtime_r Wrap_gmtime_r
 #endif
 
 static std::string StringError( int errnum )

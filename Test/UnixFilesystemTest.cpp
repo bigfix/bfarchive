@@ -36,7 +36,7 @@ TEST( FilesystemTest, SetModificationTimeFails )
   std::string fileName = Sandbox( "SetModificationTimeError" );
   DateTime mtime( DataRef( "Sun, 11 Mar 1984 08:23:42 +0000" ) );
 
-  ScopedMock<Type_utimes> guard(utimesError, Real_utimes, Set_utimes);
+  ScopedMock<Type_utimes> guard( utimesError, Real_utimes, Set_utimes );
 
   try
   {
@@ -150,6 +150,34 @@ TEST( FilesystemTest, ReadDirFails )
   {
     std::string message = err.what();
     EXPECT_TRUE( message.find( "Failed to read directory" ) != message.npos );
+  }
+  catch ( ... ) { FAIL(); }
+}
+
+static struct tm* gmtime_rFails( const time_t*, struct tm* )
+{
+  errno = EINVAL;
+  return NULL;
+}
+
+TEST( FilesystemTest, StatFails )
+{
+  std::string fileName = Sandbox( "StatFileFails" );
+
+  OpenAsNewFile( fileName.c_str() );
+
+  ScopedMock<Type_gmtime_r> guard( gmtime_rFails, Real_gmtime_r, Set_gmtime_r );
+
+  try
+  {
+    Stat( fileName.c_str() );
+    FAIL();
+  }
+  catch ( const std::exception& err )
+  {
+    std::string message = err.what();
+    EXPECT_TRUE( message.find( "Failed to convert file time to DateTime" ) !=
+                 message.npos );
   }
   catch ( ... ) { FAIL(); }
 }

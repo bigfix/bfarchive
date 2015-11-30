@@ -93,3 +93,22 @@ void Set_readdir_r( Type_readdir_r wrapFunction )
 {
   wrap_readdir_r = wrapFunction;
 }
+
+// Wrap 'gmtime_r'
+
+static Type_gmtime_r wrap_gmtime_r = Real_gmtime_r;
+
+struct tm* Real_gmtime_r( const time_t* timep, struct tm* result )
+{
+  return gmtime_r( timep, result );
+}
+
+struct tm* Wrap_gmtime_r( const time_t* timep, struct tm* result )
+{
+  return wrap_gmtime_r( timep, result );
+}
+
+void Set_gmtime_r( Type_gmtime_r wrapFunction )
+{
+  wrap_gmtime_r = wrapFunction;
+}

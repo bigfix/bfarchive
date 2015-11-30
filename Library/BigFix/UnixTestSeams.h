@@ -19,6 +19,7 @@
 
 #include <stddef.h>
 #include <dirent.h>
+#include <time.h>
 
 // Wrap 'utimes'.
 
@@ -51,5 +52,13 @@ int Wrap_readdir_r( DIR*, struct dirent*, struct dirent** );
 
 typedef int ( *Type_readdir_r )( DIR*, struct dirent*, struct dirent** );
 void Set_readdir_r( Type_readdir_r );
+
+// Wrap 'gmtime_r'.
+
+struct tm* Real_gmtime_r( const time_t*, struct tm* );
+struct tm* Wrap_gmtime_r( const time_t*, struct tm* );
+
+typedef struct tm* ( *Type_gmtime_r )( const time_t*, struct tm* );
+void Set_gmtime_r( Type_gmtime_r );
 
 #endif
