@@ -69,7 +69,7 @@ TEST( FilesystemTest, ReadFileFails )
     std::auto_ptr<File> file = OpenAsNewFile( fileName.c_str() );
 
     uint8_t buffer[32];
-    size_t nread = file->Read( buffer, sizeof( buffer ) );
+    file->Read( buffer, sizeof( buffer ) );
 
     FAIL();
   }

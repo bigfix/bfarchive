@@ -31,9 +31,7 @@ list(APPEND TESTING_SOURCES
   BigFix/TestSeams.cpp
 )
 
-if (WIN32)
-  list(APPEND TESTING_SOURCES BigFix/WindowsTestSeams.cpp)
-else()
+if (NOT WIN32)
   list(APPEND TESTING_SOURCES BigFix/UnixTestSeams.cpp)
 endif()
 
