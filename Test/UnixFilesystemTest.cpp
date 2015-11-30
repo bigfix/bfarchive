@@ -80,3 +80,22 @@ TEST( FilesystemTest, ReadFileFails )
   }
   catch ( ... ) { FAIL(); }
 }
+
+TEST( FilesystemTest, ReadStdInFails )
+{
+  ScopedMock<Type_read> guard( readError, Real_read, Set_read );
+
+  NullStream ignore;
+
+  try
+  {
+    StreamStdIn( ignore );
+    FAIL();
+  }
+  catch ( const std::exception& err )
+  {
+    std::string message = err.what();
+    EXPECT_TRUE( message.find( "Failed to read from stdin" ) != message.npos );
+  }
+  catch ( ... ) { FAIL(); }
+}
