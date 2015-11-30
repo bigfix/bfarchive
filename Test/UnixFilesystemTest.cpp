@@ -99,3 +99,31 @@ TEST( FilesystemTest, ReadStdInFails )
   }
   catch ( ... ) { FAIL(); }
 }
+
+static int writeError( int, const void*, size_t )
+{
+  errno = EBADF;
+  return -1;
+}
+
+TEST( FilesystemTest, WriteFileFails )
+{
+  std::string name = Sandbox( "FileWriteFails" );
+  DataRef hello( "hello" );
+
+  ScopedMock<Type_write> guard( writeError, Real_write, Set_write );
+
+  try
+  {
+    std::auto_ptr<File> file = OpenAsNewFile( name.c_str() );
+    file->Write( hello );
+
+    FAIL();
+  }
+  catch ( const std::exception& err )
+  {
+    std::string message = err.what();
+    EXPECT_TRUE( message.find( "Failed to write file" ) != message.npos );
+  }
+  catch ( ... ) { FAIL(); }
+}

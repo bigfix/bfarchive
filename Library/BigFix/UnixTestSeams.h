@@ -35,4 +35,12 @@ int Wrap_read( int, void*, size_t );
 typedef int ( *Type_read )( int, void*, size_t );
 void Set_read( Type_read );
 
+// Wrap 'write'.
+
+int Real_write( int, const void*, size_t );
+int Wrap_write( int, const void*, size_t );
+
+typedef int ( *Type_write )( int, const void*, size_t );
+void Set_write( Type_write );
+
 #endif

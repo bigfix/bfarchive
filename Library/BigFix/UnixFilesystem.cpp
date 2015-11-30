@@ -28,6 +28,7 @@
 #ifdef ENABLE_TEST_SEAMS
 #define utimes Wrap_utimes
 #define read Wrap_read
+#define write Wrap_write
 #endif
 
 static std::string StringError( int errnum )

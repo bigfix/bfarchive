@@ -55,3 +55,22 @@ void Set_read( Type_read wrapFunction )
 {
   wrap_read = wrapFunction;
 }
+
+// Wrap 'write'.
+
+static Type_write wrap_write = Real_write;
+
+int Real_write( int fd, const void* buf, size_t count )
+{
+  return write( fd, buf, count );
+}
+
+int Wrap_write( int fd, const void* buf, size_t count )
+{
+  return wrap_write( fd, buf, count );
+}
+
+void Set_write( Type_write wrapFunction )
+{
+  wrap_write = wrapFunction;
+}
