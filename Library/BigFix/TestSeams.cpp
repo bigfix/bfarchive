@@ -78,10 +78,6 @@ void Set_inflateInit( Type_inflateInit wrapFunction )
 
 static Type_snprintf wrap_snprintf = Real_snprintf;
 
-#ifdef _WIN32
-#define snprintf _snprintf_s
-#endif
-
 int Real_snprintf( char* buffer,
                    size_t size,
                    const char* format,
@@ -93,8 +89,13 @@ int Real_snprintf( char* buffer,
                    int minute,
                    int second )
 {
+#ifdef _WIN32
+  return _snprintf_s(
+    buffer, size, size, format, dayOfWeek, day, month, year, hour, minute, second );
+#else
   return snprintf(
     buffer, size, format, dayOfWeek, day, month, year, hour, minute, second );
+#endif
 }
 
 int Wrap_snprintf( char* buffer,
