@@ -15,7 +15,14 @@ if "%1" == "x64" (
 )
 
 cmake -G "%GENERATOR%" -T v110_xp "%SOURCE_DIR%"
-cmake --build . --config Release --target ALL_BUILD --target check
+if %errorlevel% neq 0 exit /b %errorlevel%
+
+cmake --build . --config Release --target ALL_BUILD
+if %errorlevel% neq 0 exit /b %errorlevel%
+
+cmake --build . --config Release --target check
+if %errorlevel% neq 0 exit /b %errorlevel%
+
 copy Release\BFArchive.exe .
 
 if "%2" == "zip" (

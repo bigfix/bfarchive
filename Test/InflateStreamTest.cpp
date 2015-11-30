@@ -17,7 +17,9 @@
 #include "BigFix/DataRef.h"
 #include "BigFix/Error.h"
 #include "BigFix/InflateStream.h"
+#include "BigFix/TestSeams.h"
 #include "TestUtility.h"
+#include "ScopedMock.h"
 #include <gtest/gtest.h>
 
 using namespace BigFix;
@@ -129,4 +131,29 @@ TEST( InflateStreamTest, ThrowsIfCompressedDataIsInvalid )
 
   EXPECT_THROW( inflateStream.Write( DataRef( data, data + sizeof( data ) ) ),
                 Error );
+}
+
+static int inflateInitError( z_stream* )
+{
+  return Z_STREAM_ERROR;
+}
+
+TEST( InflateStreamTest, InitFails )
+{
+  ScopedMock<Type_inflateInit> guard(
+    inflateInitError, Real_inflateInit, Set_inflateInit );
+
+  try
+  {
+    NullStream nullStream;
+    InflateStream inflateStream( nullStream );
+    FAIL();
+  }
+  catch ( const std::exception& err )
+  {
+    std::string message = err.what();
+    std::string expected = "Failed to initialize zlib";
+    EXPECT_EQ( expected, message );
+  }
+  catch ( ... ) { FAIL(); }
 }

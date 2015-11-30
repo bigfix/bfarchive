@@ -140,6 +140,17 @@ class TestCreateFileArchive(unittest.TestCase):
   def test_short_silent(self):
     self.verifyVerbose(run(['-av', 'hodor.txt', 'HodorArchive']))
 
+  def test_not_file_or_directory(self):
+    if (os.name != 'posix'):
+      return
+
+    expected = 'Error: Archives can only be created from directories or files'
+
+    (exitcode, stdout, stderr) = run(['-a', '/dev/null', 'NullArchive'])
+    self.assertEqual(exitcode, 1)
+    self.assertEqual(stdout, '')
+    self.assertEqual(stderr.strip(), expected);
+
 class TestListArchive(unittest.TestCase):
 
   def verifyResult(self, (exitcode, stdout, stderr)):

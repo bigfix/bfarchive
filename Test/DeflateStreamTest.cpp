@@ -16,7 +16,9 @@
 
 #include "BigFix/DataRef.h"
 #include "BigFix/DeflateStream.h"
+#include "BigFix/TestSeams.h"
 #include "TestUtility.h"
+#include "ScopedMock.h"
 #include <gtest/gtest.h>
 
 using namespace BigFix;
@@ -58,4 +60,74 @@ TEST( DeflateStreamTest, CompressHelloWorld )
   ASSERT_EQ( sizeof( expected ), output.size() );
   EXPECT_TRUE( std::equal( output.begin(), output.end(), expected ) );
   EXPECT_TRUE( vectorStream.ended );
+}
+
+static int deflateError( z_stream*, int )
+{
+  return Z_STREAM_ERROR;
+}
+
+TEST( DeflateStreamTest, InitFails )
+{
+  ScopedMock<Type_deflateInit> guard(
+    deflateError, Real_deflateInit, Set_deflateInit );
+
+  try
+  {
+    std::vector<uint8_t> output;
+    VectorStream vectorStream( output );
+    DeflateStream deflateStream( vectorStream );
+    FAIL();
+  }
+  catch ( const std::exception& err )
+  {
+    std::string message = err.what();
+    std::string expected = "Failed to initialize zlib";
+    EXPECT_EQ( expected, message );
+  }
+  catch ( ... ) { FAIL(); }
+}
+
+TEST( DeflateStreamTest, WriteFails )
+{
+  std::vector<uint8_t> output;
+  VectorStream vectorStream( output );
+  DeflateStream deflateStream( vectorStream );
+
+  ScopedMock<Type_deflate> guard( deflateError, Real_deflate, Set_deflate );
+
+  try
+  {
+    deflateStream.Write( DataRef( "Hello, world!" ) );
+    FAIL();
+  }
+  catch ( const std::exception& err )
+  {
+    std::string message = err.what();
+    std::string expected = "Failed to compress data";
+    EXPECT_EQ( expected, message );
+  }
+  catch ( ... ) { FAIL(); }
+}
+
+TEST( DeflateStreamTest, EndFails )
+{
+  std::vector<uint8_t> output;
+  VectorStream vectorStream( output );
+  DeflateStream deflateStream( vectorStream );
+
+  ScopedMock<Type_deflate> guard( deflateError, Real_deflate, Set_deflate );
+
+  try
+  {
+    deflateStream.End();
+    FAIL();
+  }
+  catch ( const std::exception& err )
+  {
+    std::string message = err.what();
+    std::string expected = "Failed to compress data";
+    EXPECT_EQ( expected, message );
+  }
+  catch ( ... ) { FAIL(); }
 }

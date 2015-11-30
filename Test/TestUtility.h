@@ -49,4 +49,6 @@ public:
 
 void WriteOneByOneAndEnd( BigFix::Stream& stream, BigFix::DataRef data );
 
+std::string Sandbox( const std::string& path );
+
 #endif

@@ -1,12 +1,19 @@
 language: cpp
+before_install:
+  - pip install --user cpp-coveralls
+  - export PATH=$PATH:$HOME/.local/bin
 install:
   - wget https://dl.dropboxusercontent.com/u/15529534/cmake-2.8.12.tgz
   - tar -xf cmake-2.8.12.tgz
-  - sudo cp -r cmake/* /usr
-  - cmake --version
-  - sudo pip install cpp-coveralls
-script: cmake -DCOVERAGE=true . && make && make check
+  - ./cmake/bin/cmake --version
+script:
+  - ./cmake/bin/cmake -DCOVERAGE=true .
+  - make
+  - make check
 after_success:
-  - coveralls --exclude cmake --exclude External --gcov-options '\-lp'
+  - coveralls --gcov-options '\-lp' --dump coverage.json
+  - ./filter-coverage.py
+  - curl -F 'json_file=@filtered-coverage.json' https://coveralls.io/api/v1/jobs
 notifications:
   email: false
+sudo: false

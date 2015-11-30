@@ -17,6 +17,8 @@
 #include "BigFix/DataRef.h"
 #include "BigFix/DateTime.h"
 #include "BigFix/Error.h"
+#include "BigFix/TestSeams.h"
+#include "ScopedMock.h"
 #include <gtest/gtest.h>
 
 using namespace BigFix;
@@ -68,4 +70,38 @@ TEST( DateTimeTest, ThrowsOnInvalidDates )
   EXPECT_THROW( DateTime date( badLength ), Error );
   EXPECT_THROW( DateTime date( badDay ), Error );
   EXPECT_THROW( DateTime date( badMonth ), Error );
+}
+
+static int snprintfError( char* buffer,
+                          size_t size,
+                          const char* format,
+                          const char* dayOfWeek,
+                          int day,
+                          const char* month,
+                          int year,
+                          int hour,
+                          int minute,
+                          int second )
+{
+  return 0;
+}
+
+TEST( DateTimeTest, ToStingFails )
+{
+  ScopedMock<Type_snprintf> guard( snprintfError, Real_snprintf, Set_snprintf );
+
+  DateTime date( DataRef( "Sun, 11 Mar 1984 08:23:42 +0000" ) );
+
+  try
+  {
+    date.ToString();
+    FAIL();
+  }
+  catch ( const std::exception& err )
+  {
+    std::string message = err.what();
+    std::string expected = "Failed to convert date to string";
+    EXPECT_EQ( expected, message );
+  }
+  catch ( ... ) { FAIL(); }
 }

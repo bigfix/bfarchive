@@ -18,6 +18,7 @@
 #include "BigFix/DataRef.h"
 #include "BigFix/Error.h"
 #include "BigFix/Number.h"
+#include "BigFix/TestSeams.h"
 #include <stdio.h>
 
 namespace BigFix
@@ -126,6 +127,13 @@ DateTime::DateTime( uint32_t year,
 
 #ifdef _WIN32
 #define snprintf _snprintf_s
+#endif
+
+#ifdef ENABLE_TEST_SEAMS
+#ifdef snprintf
+#undef snprintf
+#endif
+#define snprintf Wrap_snprintf
 #endif
 
 std::string DateTime::ToString() const

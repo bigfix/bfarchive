@@ -10,19 +10,17 @@ else()
   set(BIGFIX_COMPILE_OPTIONS /W3 /WX /DUNICODE /D_UNICODE)
 endif()
 
-if(NOT WIN32)
-  if(${COVERAGE})
-    list(APPEND BIGFIX_COMPILE_OPTIONS -coverage)
-    list(APPEND BIGFIX_LINK_OPTIONS -coverage)
-  else()
-    list(APPEND BIGFIX_COMPILE_OPTIONS -O3)
-  endif()
-endif()
-
 if(WIN32)
-  set(BFARCHIVE_PLATFORM_FILES Source/Version.rc Source/WindowsMain.cpp)
+  SET(BIGFIX_COMPILE ${BIGFIX_COMPILE_OPTIONS})
+  SET(BIGFIX_COMPILE_TEST ${BIGFIX_COMPILE_OPTIONS} /Od)
 else()
-  set(BFARCHIVE_PLATFORM_FILES Source/UnixMain.cpp)
+  SET(BIGFIX_COMPILE ${BIGFIX_COMPILE_OPTIONS} -O3)
+  SET(BIGFIX_COMPILE_TEST ${BIGFIX_COMPILE_OPTIONS} -O0)
+
+  if (${COVERAGE})
+    LIST(APPEND BIGFIX_COMPILE_TEST -coverage)
+    LIST(APPEND BIGFIX_LINK_TEST -coverage)
+  endif()
 endif()
 
 # Statically link the CRT on Windows. There's got to be a better way to do this.
@@ -42,17 +40,27 @@ add_subdirectory(External/gtest)
 add_subdirectory(Library)
 add_subdirectory(Test)
 
-add_executable(bfarchive
+if(WIN32)
+  set(BFARCHIVE_SOURCES Source/Version.rc Source/WindowsMain.cpp)
+else()
+  set(BFARCHIVE_SOURCES Source/UnixMain.cpp)
+endif()
+
+list(APPEND BFARCHIVE_SOURCES
   Source/ArchiveCreator.cpp
   Source/ArchiveExtractor.cpp
   Source/ArchiveLister.cpp
   Source/Main.cpp
-  ${BFARCHIVE_PLATFORM_FILES}
 )
 
-target_compile_options(bfarchive PRIVATE ${BIGFIX_COMPILE_OPTIONS})
-target_link_libraries(bfarchive bigfix ${BIGFIX_LINK_OPTIONS})
+add_executable(bfarchive ${BFARCHIVE_SOURCES})
+target_compile_options(bfarchive PRIVATE ${BIGFIX_COMPILE})
+target_link_libraries(bfarchive bigfix)
 
 if(WIN32)
   set_target_properties(bfarchive PROPERTIES OUTPUT_NAME BFArchive)
 endif()
+
+add_executable(bfarchive_testing ${BFARCHIVE_SOURCES})
+target_compile_options(bfarchive_testing PRIVATE ${BIGFIX_COMPILE_TEST})
+target_link_libraries(bfarchive_testing bigfix_testing ${BIGFIX_LINK_TEST})
